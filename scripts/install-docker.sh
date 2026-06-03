@@ -11,6 +11,26 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 require_root
 require_apt
 
+configure_docker_group() {
+  local user="${SUDO_USER:-}"
+
+  [ -n "$user" ] || return 0
+  [ "$user" != "root" ] || return 0
+
+  if ! getent group docker >/dev/null 2>&1; then
+    groupadd docker
+  fi
+
+  if id -nG "$user" | tr ' ' '\n' | grep -qx docker; then
+    log "$user is already in the docker group"
+    return 0
+  fi
+
+  usermod -aG docker "$user"
+  log "added $user to the docker group"
+  log "log out and back in for non-sudo docker commands to work"
+}
+
 if ! command -v docker >/dev/null 2>&1; then
   log "installing Docker..."
   "$HERE/install-apt-packages.sh"
@@ -33,3 +53,4 @@ fi
 
 systemctl enable --now docker >/dev/null 2>&1 || true
 docker compose version >/dev/null 2>&1 || die "docker compose v2 plugin is required"
+configure_docker_group

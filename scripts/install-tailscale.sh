@@ -4,7 +4,6 @@
 #
 # Usage:
 #   sudo TS_AUTHKEY=tskey-auth-xxxxx scripts/install-tailscale.sh
-#   sudo scripts/install-tailscale.sh
 #
 set -euo pipefail
 
@@ -24,6 +23,7 @@ fi
 
 TS_HOSTNAME="${TS_HOSTNAME:-eyepop-agent}"
 AUTHKEY="${TS_AUTHKEY:-}"
+[ -n "$AUTHKEY" ] || die "TS_AUTHKEY is required to install Tailscale"
 
 if ! command -v curl >/dev/null 2>&1; then
   "$HERE/install-apt-packages.sh"
@@ -39,12 +39,8 @@ fi
 systemctl enable --now tailscaled
 
 up_args=(--accept-routes --accept-dns=false --hostname="${TS_HOSTNAME}" --ssh)
-if [ -n "$AUTHKEY" ]; then
-  log "bringing Tailscale up as ${TS_HOSTNAME}..."
-  up_args+=(--authkey="${AUTHKEY}")
-else
-  log "no TS_AUTHKEY given; Tailscale will print an interactive login URL."
-fi
+log "bringing Tailscale up as ${TS_HOSTNAME}..."
+up_args+=(--authkey="${AUTHKEY}")
 tailscale up "${up_args[@]}"
 tailscale set --accept-routes 2>/dev/null || true
 

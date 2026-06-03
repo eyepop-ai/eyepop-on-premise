@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+.eyepop/
 google-creds.json
 creds.json
 *.service-account.json

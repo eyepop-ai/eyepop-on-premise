@@ -46,23 +46,30 @@ require_root
 [ -f "$HERE/compose.yaml" ] || die "run from the repository root (compose.yaml not found here)"
 [ -d "$HERE/agents.d" ] || die "agents.d directory is missing"
 
-"$HERE/scripts/install-docker.sh"
-"$HERE/scripts/install-nvidia.sh"
-
 if [ ! -f "$HERE/.env" ]; then
   cp "$HERE/.env.example" "$HERE/.env"
-  die ".env created from .env.example. Fill it in, then re-run."
+  die ".env created from .env.example. Fill it in, add .eyepop/creds.json, then re-run."
 fi
 
 require_env EYEPOP_URL "$HERE/.env" >/dev/null
 require_env EYEPOP_API_KEY "$HERE/.env" >/dev/null
 require_env EYEPOP_ACCOUNT_UUID "$HERE/.env" >/dev/null
-GOOGLE_CREDS_JSON_PATH="$(resolve_path "$HERE" "$(require_env GOOGLE_CREDS_JSON "$HERE/.env")")"
-[ -f "$GOOGLE_CREDS_JSON_PATH" ] || die "GOOGLE_CREDS_JSON points to missing file: $GOOGLE_CREDS_JSON_PATH"
-[ -r "$GOOGLE_CREDS_JSON_PATH" ] || die "GOOGLE_CREDS_JSON is not readable: $GOOGLE_CREDS_JSON_PATH"
+GOOGLE_CREDS_JSON_VALUE="$(env_value GOOGLE_CREDS_JSON "$HERE/.env" || true)"
+GOOGLE_CREDS_JSON_PATH="$(resolve_path "$HERE" "${GOOGLE_CREDS_JSON_VALUE:-.eyepop/creds.json}")"
+[ -f "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are missing: $GOOGLE_CREDS_JSON_PATH"
+[ -r "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are not readable: $GOOGLE_CREDS_JSON_PATH"
 
 if ! find "$HERE/agents.d" -maxdepth 1 -type f -name '*.yaml' ! -name '*.example.yaml' | grep -q .; then
   die "add at least one stream config, for example: cp agents.d/camera_1.example.yaml agents.d/camera_1.yaml"
+fi
+
+"$HERE/scripts/install-docker.sh"
+"$HERE/scripts/install-nvidia.sh"
+
+if [ -n "$(env_value TS_AUTHKEY "$HERE/.env" || true)" ]; then
+  "$HERE/scripts/install-tailscale.sh"
+else
+  log "Tailscale auth key not set; skipping Tailscale setup."
 fi
 
 REGISTRY_HOSTS=()
@@ -73,7 +80,7 @@ add_registry_host "$(image_env_or_default EYEPOP_VLM_WORKER_IMAGE "$DEFAULT_EYEP
 for registry_host in "${REGISTRY_HOSTS[@]}"; do
   log "authenticating Docker to ${registry_host}..."
   docker login -u _json_key --password-stdin "https://${registry_host}" < "$GOOGLE_CREDS_JSON_PATH" >/dev/null \
-    || die "Docker login failed for ${registry_host}. Check GOOGLE_CREDS_JSON and Artifact Registry permissions."
+    || die "Docker login failed for ${registry_host}. Check .eyepop/creds.json and Artifact Registry permissions."
 done
 
 log "pulling container images..."
