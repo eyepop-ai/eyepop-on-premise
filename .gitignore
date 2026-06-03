@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+google-creds.json
+creds.json
+*.service-account.json
+agents.d/*.yaml
+!agents.d/*.example.yaml

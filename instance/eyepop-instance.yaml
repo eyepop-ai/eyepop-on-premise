@@ -1,0 +1,11 @@
+pytorch-use-gpu: true
+routes:
+  swagger:
+    enabled: true
+  dashboard:
+    enabled: true
+agent:
+  enabled: true
+  config-dir: /opt/eyepop/agent.d
+  vlm:
+    url: http://pipeline-vlm:8080

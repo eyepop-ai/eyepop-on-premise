@@ -1,0 +1,34 @@
+version: 1
+name: Camera 1
+source:
+  type: rtsp
+  uri: rtsp://user:password@camera-host:554/stream
+  media_cache_seconds: 30
+jobs:
+  - id: vehicle_tracking
+    insights:
+      enabled: true
+    pop:
+      components:
+        - type: inference
+          forward:
+            operator:
+              type: crop
+              includeClasses:
+                - car
+                - truck
+                - motorcycle
+              crop:
+                maxItems: 16
+            targets:
+              - type: tracking
+                maxAgeSeconds: 5.0
+                agnostic: true
+                motionModel: constant_velocity
+                classBeta: 0.9
+                classHysteresis: true
+                classHysteresisMinHoldFrames: 2
+          ability: eyepop.vehicle:latest
+          categoryName: vehicles
+          confidenceThreshold: 0.7
+          objectAreaThreshold: 0.01
