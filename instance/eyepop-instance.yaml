@@ -1,9 +1,12 @@
 pytorch-use-gpu: true
+public-file-dir: /usr/share/eyepop-ai/public
 routes:
   swagger:
     enabled: true
   dashboard:
     enabled: true
+    auth:
+      disabled: true
 agent:
   enabled: true
   config-dir: /opt/eyepop/agent.d
