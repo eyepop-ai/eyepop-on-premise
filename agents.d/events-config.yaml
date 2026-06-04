@@ -1,0 +1,39 @@
+version: 1
+outputs:
+  - name: customer-webhook
+    type: webhook
+    enabled: false
+    events:
+      - track.ended
+      - insight.completed
+    webhook:
+      url: https://example.com/eyepop/events
+      timeout: 3s
+      headers: {}
+
+  - name: customer-mqtt
+    type: mqtt
+    enabled: false
+    events:
+      - track.ended
+      - insight.completed
+    mqtt:
+      broker_url: tcp://mqtt:1883
+      client_id: eyepop-agent
+      username: ""
+      password: ""
+      topic_prefix: eyepop/agent
+      qos: 0
+      retained: false
+      connect_timeout: 5s
+      publish_timeout: 3s
+
+  - name: internal-nats
+    type: nats
+    enabled: false
+    events:
+      - "*"
+    nats:
+      url: nats://nats:4222
+      subject_prefix: eyepop.agent
+      connect_timeout: 5s
