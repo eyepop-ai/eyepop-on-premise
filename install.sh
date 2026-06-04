@@ -45,6 +45,7 @@ image_env_or_default() {
 require_root
 [ -f "$HERE/compose.yaml" ] || die "run from the repository root (compose.yaml not found here)"
 [ -d "$HERE/agents.d" ] || die "agents.d directory is missing"
+[ -d "$HERE/agents.d/streams" ] || die "agents.d/streams directory is missing"
 
 if [ ! -f "$HERE/.env" ]; then
   cp "$HERE/.env.example" "$HERE/.env"
@@ -59,8 +60,8 @@ GOOGLE_CREDS_JSON_PATH="$(resolve_path "$HERE" "${GOOGLE_CREDS_JSON_VALUE:-.eyep
 [ -f "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are missing: $GOOGLE_CREDS_JSON_PATH"
 [ -r "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are not readable: $GOOGLE_CREDS_JSON_PATH"
 
-if ! find "$HERE/agents.d" -maxdepth 1 -type f -name '*.yaml' ! -name '*.example.yaml' | grep -q .; then
-  die "add at least one stream config, for example: cp agents.d/camera_1.example.yaml agents.d/camera_1.yaml"
+if ! find "$HERE/agents.d/streams" -maxdepth 1 -type f -name '*.yaml' ! -name '*.example.yaml' | grep -q .; then
+  die "add at least one stream config, for example: cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml"
 fi
 
 "$HERE/scripts/install-docker.sh"

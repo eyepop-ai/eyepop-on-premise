@@ -7,3 +7,6 @@ creds.json
 *.service-account.json
 agents.d/*.yaml
 !agents.d/*.example.yaml
+!agents.d/events-config.yaml
+agents.d/streams/*.yaml
+!agents.d/streams/*.example.yaml

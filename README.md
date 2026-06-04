@@ -25,10 +25,12 @@ Optional: set `TS_AUTHKEY` in `.env` only when this host should join Tailscale f
 3. Create your camera config:
 
 ```sh
-cp agents.d/camera_1.example.yaml agents.d/camera_1.yaml
+cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml
 ```
 
-Edit `agents.d/camera_1.yaml` so the RTSP URL points at your camera.
+Edit `agents.d/streams/camera_1.yaml` so the RTSP URL points at your camera.
+
+Optional event outputs live in `agents.d/events-config.yaml`. Enable webhook, MQTT, or NATS outputs there when downstream delivery is needed.
 
 4. Run the installer:
 
