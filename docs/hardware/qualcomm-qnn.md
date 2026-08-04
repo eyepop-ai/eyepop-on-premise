@@ -36,3 +36,5 @@ sudo ./install.sh --mode agent --hardware qualcomm-qnn
 ```
 
 The QNN overlay uses privileged mode and broad `/dev` access because the validated QAIRT stack requires it. Run this target only on a dedicated, trusted host with trusted EyePop images. Other QNN-capable devices require platform-specific validation before use.
+
+Before installation, confirm the host is the validated QNN device and the command includes `--hardware qualcomm-qnn`. Do not use the QNN target on a shared or multi-tenant host.

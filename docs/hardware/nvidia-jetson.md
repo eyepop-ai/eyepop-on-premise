@@ -9,7 +9,7 @@ Use this target for Jetson Orin AGX and NX devices. The arm64 image includes the
 ## Host requirements
 
 - Jetson Orin AGX or NX
-- JetPack 6.2.1 with Jetson Linux (L4T) 36.4.4; `runtime-cuda-jetson:latest` is validated on this release pair
+- JetPack 6.2.1 with Jetson Linux (L4T) 36.4.4; `registry.eyepop.ai/ai/runtime-cuda-jetson:latest` is validated on this release pair
 - Docker with the NVIDIA runtime configured by JetPack
 
 Do not substitute the generic `runtime-cuda` image or mount host CUDA libraries into the container.

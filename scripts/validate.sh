@@ -38,6 +38,9 @@ command -v shellcheck >/dev/null 2>&1 || fail "shellcheck is required"
 bash -n "$ROOT/install.sh" "$ROOT"/scripts/*.sh
 shellcheck --severity=warning "$ROOT/install.sh" "$ROOT"/scripts/*.sh
 
+tracked_streams="$(git -C "$ROOT" ls-files 'agents.d/streams/*.yaml' | grep -v '\.example\.yaml$' || true)"
+[ -z "$tracked_streams" ] || fail "tracked Agent stream configuration may contain credentials: $tracked_streams"
+
 for mode in "${MODES[@]}"; do
   mode_file="$ROOT/deployments/modes/$mode.yaml"
   [ -f "$mode_file" ] || fail "missing deployments/modes/$mode.yaml"
@@ -59,7 +62,7 @@ for mode in "${MODES[@]}"; do
       -f "$ROOT/compose.yaml" \
       -f "$mode_file" \
       -f "$hardware_file" \
-      config --no-interpolate >/dev/null
+      config >/dev/null
   done
 done
 
@@ -73,7 +76,11 @@ root = Path(sys.argv[1])
 missing = []
 invalid_images = []
 runtime_pattern = re.compile(
-    r"\b(?:[a-z0-9.-]+(?::[0-9]+)?/)+runtime-[a-z0-9-]+:[a-zA-Z0-9._-]+"
+    r"(?<![a-zA-Z0-9._/])"
+    r"(?:(?:[a-z0-9][a-z0-9.-]*(?::[0-9]+)?/)?"
+    r"(?:[a-z0-9][a-z0-9._-]*/)*)"
+    r"runtime-[a-z0-9-]+"
+    r"(?::[a-zA-Z0-9._-]+|@sha256:[a-fA-F0-9]{64})"
 )
 approved_pattern = re.compile(
     r"^registry\.eyepop\.ai/ai/runtime-[a-z0-9-]+:latest$"
@@ -89,7 +96,7 @@ for document in root.rglob("*"):
     except UnicodeDecodeError:
         continue
     for image in runtime_pattern.findall(content):
-        if not approved_pattern.match(image):
+        if not approved_pattern.fullmatch(image):
             invalid_images.append(f"{document.relative_to(root)} -> {image}")
 
 for document in [root / "README.md", *(root / "docs").rglob("*.md")]:

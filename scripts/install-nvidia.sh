@@ -48,6 +48,4 @@ fi
 nvidia-ctk runtime configure --runtime=docker
 systemctl restart docker
 
-docker run --rm --gpus all ubuntu nvidia-smi -L >/dev/null 2>&1 \
-  || die "GPU not visible inside containers. Check the toolkit and driver."
-log "GPU visible in containers."
+log "NVIDIA Container Toolkit configured."

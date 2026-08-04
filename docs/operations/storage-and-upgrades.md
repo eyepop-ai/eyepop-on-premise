@@ -20,27 +20,29 @@ The installer prints the pulled runtime image digest. Record that value with the
 Use the same mode and hardware overlays that started the deployment. This example updates Standalone on CPU:
 
 ```shell
-docker compose --env-file .env \
+DEPLOYED_IMAGE="$(docker compose --project-name eyepop-on-premise --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  config --images | sort -u | head -n 1)"
+ROLLBACK_IMAGE="$(docker image inspect "$DEPLOYED_IMAGE" \
+  --format '{{index .RepoDigests 0}}')"
+printf 'Rollback image: %s\n' "$ROLLBACK_IMAGE"
+
+docker compose --project-name eyepop-on-premise --env-file .env \
   -f compose.yaml \
   -f deployments/modes/standalone.yaml \
   -f deployments/hardware/cpu.yaml \
   pull
 
-docker compose --env-file .env \
+docker compose --project-name eyepop-on-premise --env-file .env \
   -f compose.yaml \
   -f deployments/modes/standalone.yaml \
   -f deployments/hardware/cpu.yaml \
   up -d
 ```
 
-The hardware overlays track the `latest` tag. Record the deployed image digest again before an update so the deployment can roll back to an exact known image if necessary:
-
-```shell
-docker image inspect registry.eyepop.ai/ai/runtime-cpu:latest \
-  --format '{{index .RepoDigests 0}}'
-```
-
-Set `EYEPOP_RUNTIME_IMAGE` to that digest in `.env` for a controlled rollback, recreate the service, and remove the override after the issue is resolved.
+The hardware overlays track the `latest` tag. The first two commands capture the digest for the image selected by the active hardware overlay before `pull` moves the local tag. Set `EYEPOP_RUNTIME_IMAGE` in `.env` to the digest printed as `Rollback image` for a controlled rollback, recreate the service with the same project and overlays, and remove the override after the issue is resolved.
 
 ## Change mode or hardware
 

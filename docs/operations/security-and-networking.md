@@ -2,15 +2,11 @@
 
 ## Local API exposure
 
-The shared Compose file publishes port 8080 on `127.0.0.1`, so another machine cannot connect directly. Keep this default unless the deployment has an explicit private-network and authentication design.
+The shared Compose file publishes port 8080 on `127.0.0.1`, so another machine cannot connect directly. The supplied package does not provide a configurable bind address.
 
-For remote access, prefer one of these patterns:
+For remote access, place an authenticated reverse proxy or equivalent relay in front of the loopback endpoint. Bind that access layer to a private interface and restrict it through a VPN, private overlay network, or firewall policy for known application hosts.
 
-- an authenticated reverse proxy on a private interface;
-- a VPN or private overlay network such as Tailscale;
-- a firewall rule restricted to known application hosts.
-
-Do not publish the runtime API or dashboard directly to the public internet. The local dashboard and Swagger routes are enabled without their own login in the supplied instance configuration.
+Do not publish the runtime API, dashboard, or an unauthenticated relay directly to the public internet. The local dashboard and Swagger routes are enabled without their own login in the supplied instance configuration.
 
 ## Secrets
 

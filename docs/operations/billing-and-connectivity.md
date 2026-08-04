@@ -25,8 +25,14 @@ Network failures and non-success responses leave the batch in the local spool fo
 Inspect runtime logs for registration or usage-delivery errors:
 
 ```shell
-docker compose logs --since 30m eyepop-instance
+docker compose --project-name eyepop-on-premise --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  logs --since 30m eyepop-instance
 ```
+
+Replace the mode and hardware overlays with the deployed selection.
 
 Confirm DNS and TLS reachability from the host:
 

@@ -73,7 +73,7 @@ require_group_id() {
   local env_name="$2"
   local group_id
 
-  group_id="$(getent group "$group_name" | cut -d: -f3)"
+  group_id="$(getent group "$group_name" | cut -d: -f3 || true)"
   [ -n "$group_id" ] || die "host group '$group_name' is required for $HARDWARE"
   export "$env_name=$group_id"
 }
@@ -112,8 +112,10 @@ print_compose_command() {
 require_root
 [ -f "$HERE/.env" ] || {
   cp "$HERE/.env.example" "$HERE/.env"
+  chmod 600 "$HERE/.env" || die "could not restrict permissions on $HERE/.env"
   die ".env created from .env.example. Add the EyePop account credentials, then re-run."
 }
+chmod 600 "$HERE/.env" || die "could not restrict permissions on $HERE/.env"
 
 require_env EYEPOP_URL "$HERE/.env" >/dev/null
 require_env EYEPOP_API_KEY "$HERE/.env" >/dev/null
@@ -170,6 +172,11 @@ if [ -n "$RUNTIME_DIGEST" ] && [ "$RUNTIME_DIGEST" != "<no value>" ]; then
 else
   log "pulled runtime image: $RUNTIME_IMAGE"
 fi
+if [ "$HARDWARE" = "nvidia-cuda" ]; then
+  docker run --rm --gpus all --entrypoint nvidia-smi "$RUNTIME_IMAGE" -L >/dev/null 2>&1 \
+    || die "GPU not visible in the EyePop runtime container. Check the toolkit and driver."
+  log "GPU visible in the EyePop runtime container."
+fi
 
 if [ "$START" -ne 1 ]; then
   log "host ready and images pulled."
@@ -187,7 +194,8 @@ HEALTH_PATH=/health
 
 log "waiting for $HEALTH_PATH..."
 for _ in $(seq 1 36); do
-  if curl -fsS "http://127.0.0.1:${HTTP_PORT}${HEALTH_PATH}" >/dev/null 2>&1; then
+  if curl --connect-timeout 2 --max-time 5 -fsS \
+    "http://127.0.0.1:${HTTP_PORT}${HEALTH_PATH}" >/dev/null 2>&1; then
     log "$MODE runtime healthy."
     log "dashboard: http://127.0.0.1:${HTTP_PORT}/dashboard/"
     exit 0

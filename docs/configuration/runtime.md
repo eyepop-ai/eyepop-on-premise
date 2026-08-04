@@ -31,4 +31,4 @@ Both mode files configure:
 
 Compose publishes the API as `127.0.0.1:8080` by default. Set `EYEPOP_HTTP_PORT` to change the host port without changing the container port.
 
-To reach the runtime from another machine, use a private interface, firewall policy, or authenticated reverse proxy described in [Security and networking](../operations/security-and-networking.md). Do not publish port 8080 directly to the public internet.
+The supplied package has no configurable bind address and cannot be exposed directly on another host interface. To reach it from another machine, place an authenticated reverse proxy or equivalent relay in front of the loopback endpoint as described in [Security and networking](../operations/security-and-networking.md). Do not publish port 8080 directly to the public internet.
