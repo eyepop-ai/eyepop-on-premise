@@ -13,6 +13,8 @@ Container recreation and `docker compose down` preserve both volumes. `docker co
 
 Back up the private volume according to the host's container-storage policy. Protect backups as secrets because private runtime state is account-specific.
 
+The installer prints the pulled runtime image digest. Record that value with the deployment configuration on first installation so a later rollback can restore the exact image even after the `latest` tag moves.
+
 ## Update
 
 Use the same mode and hardware overlays that started the deployment. This example updates Standalone on CPU:
@@ -31,7 +33,7 @@ docker compose --env-file .env \
   up -d
 ```
 
-The hardware overlays track the `latest` tag. Record the deployed image digest before an update so the deployment can roll back to an exact known image if necessary:
+The hardware overlays track the `latest` tag. Record the deployed image digest again before an update so the deployment can roll back to an exact known image if necessary:
 
 ```shell
 docker image inspect registry.eyepop.ai/ai/runtime-cpu:latest \

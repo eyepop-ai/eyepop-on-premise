@@ -98,6 +98,17 @@ registry_login() {
     || die "Docker login failed. Check the registry credentials from the EyePop dashboard."
 }
 
+print_compose_command() {
+  printf 'cd %q &&' "$HERE"
+  if [ "${#COMPOSE_ENV[@]}" -gt 0 ]; then
+    printf ' env'
+    printf ' %q' "${COMPOSE_ENV[@]}"
+  fi
+  printf ' docker compose'
+  printf ' %q' "${COMPOSE_ARGS[@]}"
+  printf ' %q' "$@"
+}
+
 require_root
 [ -f "$HERE/.env" ] || {
   cp "$HERE/.env.example" "$HERE/.env"
@@ -152,17 +163,19 @@ log "validating $MODE mode on $HARDWARE..."
 
 log "pulling container images..."
 (cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" pull)
+RUNTIME_IMAGE="$(cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" config --images | sort -u | head -n 1)"
+RUNTIME_DIGEST="$(docker image inspect "$RUNTIME_IMAGE" --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+if [ -n "$RUNTIME_DIGEST" ] && [ "$RUNTIME_DIGEST" != "<no value>" ]; then
+  log "pulled runtime image: $RUNTIME_DIGEST"
+else
+  log "pulled runtime image: $RUNTIME_IMAGE"
+fi
 
 if [ "$START" -ne 1 ]; then
   log "host ready and images pulled."
-  printf 'Start with: cd %q &&' "$HERE"
-  if [ "${#COMPOSE_ENV[@]}" -gt 0 ]; then
-    printf ' env'
-    printf ' %q' "${COMPOSE_ENV[@]}"
-  fi
-  printf ' docker compose'
-  printf ' %q' "${COMPOSE_ARGS[@]}"
-  printf ' up -d\n'
+  printf 'Start with: '
+  print_compose_command up -d
+  printf '\n'
   exit 0
 fi
 
@@ -182,4 +195,5 @@ for _ in $(seq 1 36); do
   sleep 5
 done
 
-die "runtime did not become healthy; inspect: docker compose ${COMPOSE_ARGS[*]} logs eyepop-instance"
+RECOVERY_COMMAND="$(print_compose_command logs eyepop-instance)"
+die "runtime did not become healthy; inspect: $RECOVERY_COMMAND"

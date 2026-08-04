@@ -20,6 +20,11 @@ FASTRPC_GROUP_ID="$(getent group fastrpc | cut -d: -f3)"
 DMAHEAP_GROUP_ID="$(getent group dmaheap | cut -d: -f3)"
 [ -n "$FASTRPC_GROUP_ID" ] || { echo 'fastrpc group not found' >&2; exit 1; }
 [ -n "$DMAHEAP_GROUP_ID" ] || { echo 'dmaheap group not found' >&2; exit 1; }
+sed -i \
+  -e '/^QAIRT_SDK_ROOT=/d' \
+  -e '/^FASTRPC_GROUP_ID=/d' \
+  -e '/^DMAHEAP_GROUP_ID=/d' \
+  .env
 printf 'QAIRT_SDK_ROOT=%s\n' "$QAIRT_SDK_ROOT" >> .env
 printf 'FASTRPC_GROUP_ID=%s\n' "$FASTRPC_GROUP_ID" >> .env
 printf 'DMAHEAP_GROUP_ID=%s\n' "$DMAHEAP_GROUP_ID" >> .env

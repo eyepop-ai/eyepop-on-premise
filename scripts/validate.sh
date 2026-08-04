@@ -34,6 +34,9 @@ done
 
 command -v docker >/dev/null 2>&1 || fail "docker is required"
 docker compose version >/dev/null 2>&1 || fail "Docker Compose is required"
+command -v shellcheck >/dev/null 2>&1 || fail "shellcheck is required"
+bash -n "$ROOT/install.sh" "$ROOT"/scripts/*.sh
+shellcheck --severity=warning "$ROOT/install.sh" "$ROOT"/scripts/*.sh
 
 for mode in "${MODES[@]}"; do
   mode_file="$ROOT/deployments/modes/$mode.yaml"
@@ -98,8 +101,15 @@ for document in [root / "README.md", *(root / "docs").rglob("*.md")]:
         if target.startswith(("http://", "https://", "mailto:", "#")):
             continue
         path = unquote(target.split("#", 1)[0])
-        if path and not (document.parent / path).resolve().exists():
-            missing.append(f"{document.relative_to(root)} -> {target}")
+        if path:
+            resolved = (document.parent / path).resolve()
+            try:
+                resolved.relative_to(root)
+            except ValueError:
+                missing.append(f"{document.relative_to(root)} -> {target} (outside repository)")
+            else:
+                if not resolved.exists():
+                    missing.append(f"{document.relative_to(root)} -> {target}")
 
 if invalid_images:
     print(

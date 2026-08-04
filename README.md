@@ -35,6 +35,8 @@ Add the API key and account UUID from [My Servers](https://dashboard.eyepop.ai/s
 cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml
 ```
 
+Edit the copied file and replace its example RTSP URL and credentials before installation.
+
 Run the installer with one mode and one hardware target:
 
 ```shell

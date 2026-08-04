@@ -17,6 +17,7 @@ Add the host render group ID to `.env`:
 ```shell
 RENDER_GROUP_ID="$(getent group render | cut -d: -f3)"
 [ -n "$RENDER_GROUP_ID" ] || { echo 'render group not found' >&2; exit 1; }
+sed -i '/^RENDER_GROUP_ID=/d' .env
 printf 'RENDER_GROUP_ID=%s\n' "$RENDER_GROUP_ID" >> .env
 ```
 
