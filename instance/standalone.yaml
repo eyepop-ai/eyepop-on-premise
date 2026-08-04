@@ -1,0 +1,19 @@
+instance-name: on-premise-standalone
+http-host: 0.0.0.0
+http-port: 8080
+model-cache-dir: /opt/eyepop/models
+private-config-dir: /opt/eyepop/private
+pipeline-exec: /usr/bin/eyepop-pipeline
+pipeline-platform-mode: default
+public-file-dir: /usr/share/eyepop-ai/public
+pipeline-log-passthrough: true
+routes:
+  debug:
+    enabled: false
+  swagger:
+    enabled: true
+  dashboard:
+    enabled: true
+    path: /dashboard
+agent:
+  enabled: false

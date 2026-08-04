@@ -1,0 +1,23 @@
+services:
+  volume-permissions:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-qnn:latest}
+  eyepop-instance:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-qnn:latest}
+    privileged: true
+    devices:
+      - /dev:/dev
+    group_add:
+      - ${FASTRPC_GROUP_ID:?set FASTRPC_GROUP_ID in .env}
+      - ${DMAHEAP_GROUP_ID:?set DMAHEAP_GROUP_ID in .env}
+    environment:
+      ADSP_LIBRARY_PATH: /opt/qairt/lib/hexagon-v73/unsigned
+      LD_LIBRARY_PATH: /lib:/lib/aarch64-linux-gnu:/opt/qairt/lib/aarch64-oe-linux-gcc11.2:/lib.host:/lib.host/aarch64-linux-gnu
+    volumes:
+      - type: bind
+        source: ${QAIRT_SDK_ROOT:?set QAIRT_SDK_ROOT in .env}
+        target: /opt/qairt
+        read_only: true
+      - type: bind
+        source: /usr/lib
+        target: /lib.host
+        read_only: true

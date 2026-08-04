@@ -1,0 +1,7 @@
+services:
+  eyepop-instance:
+    volumes:
+      - type: bind
+        source: ./instance/standalone.yaml
+        target: /etc/eyepop-instance.yml
+        read_only: true
