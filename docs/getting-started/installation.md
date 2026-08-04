@@ -67,7 +67,7 @@ EYEPOP_REGISTRY_PASSWORD="$EYEPOP_REGISTRY_PASSWORD" \
 
 Do not use this form from an unprivileged shell. Use short-lived automation secrets and avoid saving the registry password in `.env`, command arguments, or shell history.
 
-Docker stores registry authentication in its configured credential store. After the image pull, run `docker logout registry.eyepop.ai` when the host does not need unattended updates, or give automation an isolated `DOCKER_CONFIG` directory and remove it after installation.
+Docker stores registry authentication in its configured credential store. After the image pull, run `sudo docker logout registry.eyepop.ai` when the host does not need unattended updates. When automation uses an isolated configuration directory, use that same root-side directory for logout (`sudo docker --config /path/to/docker-config logout registry.eyepop.ai`), then remove it after installation.
 
 Use `--no-start` to prepare the host and pull images without starting the runtime.
 

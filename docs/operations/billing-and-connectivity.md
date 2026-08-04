@@ -32,7 +32,7 @@ docker compose --project-name eyepop-on-premise --env-file .env \
   logs --since 30m eyepop-instance
 ```
 
-Replace the mode and hardware overlays with the deployed selection.
+Run this command from the repository root so `.env` and all three Compose paths resolve. Replace the mode and hardware overlays with the deployed selection.
 
 Confirm DNS and TLS reachability from the host:
 

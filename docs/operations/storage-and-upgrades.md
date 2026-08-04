@@ -20,13 +20,17 @@ The installer prints the pulled runtime image digest. Record that value with the
 Use the same mode and hardware overlays that started the deployment. This example updates Standalone on CPU:
 
 ```shell
-DEPLOYED_IMAGE="$(docker compose --project-name eyepop-on-premise --env-file .env \
+CONTAINER_ID="$(docker compose --project-name eyepop-on-premise --env-file .env \
   -f compose.yaml \
   -f deployments/modes/standalone.yaml \
   -f deployments/hardware/cpu.yaml \
-  config --images | sort -u | head -n 1)"
-ROLLBACK_IMAGE="$(docker image inspect "$DEPLOYED_IMAGE" \
+  ps -q eyepop-instance)"
+[ -n "$CONTAINER_ID" ] || { echo 'eyepop-instance is not running' >&2; exit 1; }
+RUNNING_IMAGE_ID="$(docker inspect "$CONTAINER_ID" --format '{{.Image}}')"
+ROLLBACK_IMAGE="$(docker image inspect "$RUNNING_IMAGE_ID" \
   --format '{{index .RepoDigests 0}}')"
+[ -n "$ROLLBACK_IMAGE" ] && [ "$ROLLBACK_IMAGE" != '<no value>' ] \
+  || { echo 'running image has no repository digest' >&2; exit 1; }
 printf 'Rollback image: %s\n' "$ROLLBACK_IMAGE"
 
 docker compose --project-name eyepop-on-premise --env-file .env \
@@ -42,7 +46,7 @@ docker compose --project-name eyepop-on-premise --env-file .env \
   up -d
 ```
 
-The hardware overlays track the `latest` tag. The first two commands capture the digest for the image selected by the active hardware overlay before `pull` moves the local tag. Set `EYEPOP_RUNTIME_IMAGE` in `.env` to the digest printed as `Rollback image` for a controlled rollback, recreate the service with the same project and overlays, and remove the override after the issue is resolved.
+The hardware overlays track the `latest` tag. The first commands resolve the exact image ID used by the running service to its repository digest before `pull` moves the local tag. Set `EYEPOP_RUNTIME_IMAGE` in `.env` to the digest printed as `Rollback image` for a controlled rollback, recreate the service with the same project and overlays, and remove the override after the issue is resolved.
 
 ## Change mode or hardware
 

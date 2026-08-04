@@ -38,7 +38,9 @@ command -v shellcheck >/dev/null 2>&1 || fail "shellcheck is required"
 bash -n "$ROOT/install.sh" "$ROOT"/scripts/*.sh
 shellcheck --severity=warning "$ROOT/install.sh" "$ROOT"/scripts/*.sh
 
-tracked_streams="$(git -C "$ROOT" ls-files 'agents.d/streams/*.yaml' | grep -v '\.example\.yaml$' || true)"
+tracked_streams="$(git -C "$ROOT" ls-files -- 'agents.d/streams/*.yaml')" \
+  || fail "could not enumerate tracked Agent stream configuration"
+tracked_streams="$(printf '%s\n' "$tracked_streams" | sed '/\.example\.yaml$/d')"
 [ -z "$tracked_streams" ] || fail "tracked Agent stream configuration may contain credentials: $tracked_streams"
 
 for mode in "${MODES[@]}"; do

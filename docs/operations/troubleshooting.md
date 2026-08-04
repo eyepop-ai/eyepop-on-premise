@@ -11,12 +11,12 @@ Use the registry username and password supplied when the server was created in t
 ## The runtime is unhealthy
 
 ```shell
-docker compose --env-file .env \
+docker compose --project-name eyepop-on-premise --env-file .env \
   -f compose.yaml \
   -f deployments/modes/standalone.yaml \
   -f deployments/hardware/cpu.yaml \
   ps
-docker compose --env-file .env \
+docker compose --project-name eyepop-on-premise --env-file .env \
   -f compose.yaml \
   -f deployments/modes/standalone.yaml \
   -f deployments/hardware/cpu.yaml \
@@ -31,7 +31,9 @@ Replace the mode and hardware overlays with the deployed selection. Agent mode u
 Run `nvidia-smi` on the host, then verify Docker access:
 
 ```shell
-docker run --rm --gpus all ubuntu nvidia-smi -L
+docker run --rm --gpus all --entrypoint nvidia-smi \
+  "${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cuda:latest}" \
+  -L
 ```
 
 For Jetson, confirm `/etc/nv_tegra_release` exists and `docker info` lists the `nvidia` runtime. Do not use the generic CUDA overlay on Jetson.
