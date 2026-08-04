@@ -1,0 +1,13 @@
+services:
+  eyepop-instance:
+    volumes:
+      - type: bind
+        source: ./instance/agent.yaml
+        target: /etc/eyepop-instance.yml
+        read_only: true
+      - type: bind
+        source: ./agents.d
+        target: /opt/eyepop/agent.d
+        read_only: true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/agent/health || wget -qO- http://127.0.0.1:8080/agent/health >/dev/null"]

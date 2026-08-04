@@ -1,64 +1,49 @@
 name: eyepop-on-premise
 
 volumes:
-  pipeline_vlm_cache:
+  eyepop_instance_private:
+  eyepop_instance_models:
 
 services:
-  eyepop-instance:
-    image: ${EYEPOP_RUNTIME_IMAGE:-us-west1-docker.pkg.dev/eyepop-staging/worker/runtime-cuda:v3.36.4}
-    depends_on:
-      pipeline-vlm:
-        condition: service_started
-    ports:
-      - "8080:8080"
-    env_file:
-      - .env
+  volume-permissions:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cpu:latest}
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - mkdir -p /opt/eyepop/private /opt/eyepop/models && chown -R eyepop:eyepop /opt/eyepop/private /opt/eyepop/models
     volumes:
-      - type: bind
-        source: ./instance/eyepop-instance.yaml
-        target: /etc/eyepop-instance.yml
-        read_only: true
-      - type: bind
-        source: ./agents.d
-        target: /opt/eyepop/agent.d
+      - type: volume
+        source: eyepop_instance_private
+        target: /opt/eyepop/private
+      - type: volume
+        source: eyepop_instance_models
+        target: /opt/eyepop/models
+    restart: "no"
+
+  eyepop-instance:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cpu:latest}
+    depends_on:
+      volume-permissions:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${EYEPOP_HTTP_PORT:-8080}:8080"
+    environment:
+      EYEPOP_URL: ${EYEPOP_URL:?set EYEPOP_URL in .env}
+      EYEPOP_API_KEY: ${EYEPOP_API_KEY:?set EYEPOP_API_KEY in .env}
+      EYEPOP_ACCOUNT_UUID: ${EYEPOP_ACCOUNT_UUID:?set EYEPOP_ACCOUNT_UUID in .env}
+    volumes:
+      - type: volume
+        source: eyepop_instance_private
+        target: /opt/eyepop/private
+      - type: volume
+        source: eyepop_instance_models
+        target: /opt/eyepop/models
     tmpfs:
       - /tmp:size=8g,mode=1777
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/agent/health || wget -qO- http://127.0.0.1:8080/agent/health >/dev/null"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health || wget -qO- http://127.0.0.1:8080/health >/dev/null"]
       interval: 10s
       timeout: 5s
       retries: 30
       start_period: 30s
-    restart: unless-stopped
-
-  pipeline-vlm:
-    image: ${EYEPOP_VLM_WORKER_IMAGE:-us-west1-docker.pkg.dev/eyepop-staging/vlm-worker/qwen3-instruct:v3.12.2}
-    ports:
-      - "18080:8080"
-    environment:
-      DTYPE: auto
-    volumes:
-      - type: volume
-        source: pipeline_vlm_cache
-        target: /home/app/.cache
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/healthz || wget -qO- http://127.0.0.1:8080/healthz >/dev/null"]
-      interval: 15s
-      timeout: 5s
-      retries: 120
-      start_period: 60s
     restart: unless-stopped

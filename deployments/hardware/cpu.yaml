@@ -1,0 +1,5 @@
+services:
+  volume-permissions:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cpu:latest}
+  eyepop-instance:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cpu:latest}

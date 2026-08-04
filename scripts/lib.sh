@@ -48,14 +48,3 @@ require_env() {
   [ -n "$value" ] || die "$name is empty in $file"
   printf '%s' "$value"
 }
-
-resolve_path() {
-  local root="$1"
-  local path="$2"
-
-  if [ "${path:0:1}" = "/" ]; then
-    printf '%s' "$path"
-  else
-    printf '%s/%s' "$root" "$path"
-  fi
-}

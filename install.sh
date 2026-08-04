@@ -1,110 +1,207 @@
 #!/usr/bin/env bash
-#
-# install.sh - set up and launch the EyePop on-premise stack.
-#
-# Usage:
-#   sudo ./install.sh
-#   sudo ./install.sh --no-start
-#
+
 set -euo pipefail
 
+MODE=""
+HARDWARE=""
 START=1
-[ "${1:-}" = "--no-start" ] && START=0
 
-HERE="$(cd "$(dirname "$0")" && pwd)"
-# shellcheck source=scripts/lib.sh
-. "$HERE/scripts/lib.sh"
+usage() {
+  cat <<'EOF'
+Usage: sudo ./install.sh --mode <standalone|agent> --hardware <hardware> [--no-start]
 
-DEFAULT_EYEPOP_RUNTIME_IMAGE="us-west1-docker.pkg.dev/eyepop-staging/worker/runtime-cuda:v3.36.4"
-DEFAULT_EYEPOP_VLM_WORKER_IMAGE="us-west1-docker.pkg.dev/eyepop-staging/vlm-worker/qwen3-instruct:v3.12.2"
-COMPOSE_ARGS=(-f compose.yaml)
-
-add_registry_host() {
-  local image="$1"
-  local host existing
-
-  host="${image%%/*}"
-  [ "$host" != "$image" ] || return 0
-  printf '%s' "$host" | grep -qE '\.pkg\.dev$' || return 0
-
-  for existing in "${REGISTRY_HOSTS[@]}"; do
-    [ "$existing" != "$host" ] || return 0
-  done
-  REGISTRY_HOSTS+=("$host")
+Hardware:
+  cpu
+  nvidia-cuda
+  nvidia-jetson
+  intel-openvino
+  qualcomm-qnn
+EOF
 }
 
-image_env_or_default() {
-  local name="$1"
-  local default="$2"
-  local value
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --mode)
+      [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+      MODE="$2"
+      shift 2
+      ;;
+    --hardware)
+      [ "$#" -ge 2 ] || { usage >&2; exit 2; }
+      HARDWARE="$2"
+      shift 2
+      ;;
+    --no-start)
+      START=0
+      shift
+      ;;
+    --help|-h)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
 
-  value="$(env_value "$name" "$HERE/.env" || true)"
-  printf '%s' "${value:-$default}"
+case "$MODE" in
+  standalone|agent) ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+case "$HARDWARE" in
+  cpu|nvidia-cuda|nvidia-jetson|intel-openvino|qualcomm-qnn) ;;
+  *) usage >&2; exit 2 ;;
+esac
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/scripts/lib.sh"
+
+COMPOSE_ARGS=(
+  --project-directory "$HERE"
+  --env-file "$HERE/.env"
+  -f "$HERE/compose.yaml"
+  -f "$HERE/deployments/modes/$MODE.yaml"
+  -f "$HERE/deployments/hardware/$HARDWARE.yaml"
+)
+COMPOSE_ENV=()
+
+require_group_id() {
+  local group_name="$1"
+  local env_name="$2"
+  local group_id
+
+  group_id="$(getent group "$group_name" | cut -d: -f3 || true)"
+  [ -n "$group_id" ] || die "host group '$group_name' is required for $HARDWARE"
+  export "$env_name=$group_id"
+}
+
+registry_login() {
+  local username="${EYEPOP_REGISTRY_USERNAME:-}"
+  local password="${EYEPOP_REGISTRY_PASSWORD:-}"
+
+  if [ -z "$username" ]; then
+    [ -t 0 ] || die "set EYEPOP_REGISTRY_USERNAME for non-interactive installation"
+    read -r -p 'EyePop registry username: ' username
+  fi
+  if [ -z "$password" ]; then
+    [ -t 0 ] || die "set EYEPOP_REGISTRY_PASSWORD for non-interactive installation"
+    read -r -s -p 'EyePop registry password: ' password
+    printf '\n'
+  fi
+
+  printf '%s' "$password" | docker login registry.eyepop.ai \
+    --username "$username" \
+    --password-stdin >/dev/null \
+    || die "Docker login failed. Check the registry credentials from the EyePop dashboard."
+}
+
+print_compose_command() {
+  printf 'cd %q &&' "$HERE"
+  if [ "${#COMPOSE_ENV[@]}" -gt 0 ]; then
+    printf ' env'
+    printf ' %q' "${COMPOSE_ENV[@]}"
+  fi
+  printf ' docker compose'
+  printf ' %q' "${COMPOSE_ARGS[@]}"
+  printf ' %q' "$@"
 }
 
 require_root
-[ -f "$HERE/compose.yaml" ] || die "run from the repository root (compose.yaml not found here)"
-[ -d "$HERE/agents.d" ] || die "agents.d directory is missing"
-[ -d "$HERE/agents.d/streams" ] || die "agents.d/streams directory is missing"
-
-if [ ! -f "$HERE/.env" ]; then
+[ -f "$HERE/.env" ] || {
   cp "$HERE/.env.example" "$HERE/.env"
-  die ".env created from .env.example. Fill it in, add .eyepop/creds.json, then re-run."
-fi
+  chmod 600 "$HERE/.env" || die "could not restrict permissions on $HERE/.env"
+  die ".env created from .env.example. Add the EyePop account credentials, then re-run."
+}
+chmod 600 "$HERE/.env" || die "could not restrict permissions on $HERE/.env"
 
 require_env EYEPOP_URL "$HERE/.env" >/dev/null
 require_env EYEPOP_API_KEY "$HERE/.env" >/dev/null
 require_env EYEPOP_ACCOUNT_UUID "$HERE/.env" >/dev/null
-GOOGLE_CREDS_JSON_VALUE="$(env_value GOOGLE_CREDS_JSON "$HERE/.env" || true)"
-GOOGLE_CREDS_JSON_PATH="$(resolve_path "$HERE" "${GOOGLE_CREDS_JSON_VALUE:-.eyepop/creds.json}")"
-[ -f "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are missing: $GOOGLE_CREDS_JSON_PATH"
-[ -r "$GOOGLE_CREDS_JSON_PATH" ] || die "Google service account credentials are not readable: $GOOGLE_CREDS_JSON_PATH"
+HTTP_PORT="$(env_value EYEPOP_HTTP_PORT "$HERE/.env" || true)"
+HTTP_PORT="${HTTP_PORT:-8080}"
 
-if ! find "$HERE/agents.d/streams" -maxdepth 1 -type f -name '*.yaml' ! -name '*.example.yaml' | grep -q .; then
-  die "add at least one stream config, for example: cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml"
+if [ "$MODE" = "agent" ]; then
+  [ -d "$HERE/agents.d/streams" ] || die "agents.d/streams is missing"
+  if ! find "$HERE/agents.d/streams" -maxdepth 1 -type f -name '*.yaml' ! -name '*.example.yaml' | grep -q .; then
+    die "add a stream config: cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml"
+  fi
 fi
 
 "$HERE/scripts/install-docker.sh"
-"$HERE/scripts/install-nvidia.sh"
+
+case "$HARDWARE" in
+  nvidia-cuda)
+    "$HERE/scripts/install-nvidia.sh" cuda
+    ;;
+  nvidia-jetson)
+    "$HERE/scripts/install-nvidia.sh" jetson
+    ;;
+  intel-openvino)
+    [ -d /dev/dri ] || die "/dev/dri is required for Intel accelerator access"
+    require_group_id render RENDER_GROUP_ID
+    COMPOSE_ENV+=("RENDER_GROUP_ID=$RENDER_GROUP_ID")
+    ;;
+  qualcomm-qnn)
+    QAIRT_SDK_ROOT="$(require_env QAIRT_SDK_ROOT "$HERE/.env")"
+    export QAIRT_SDK_ROOT
+    [ -d "$QAIRT_SDK_ROOT/lib/hexagon-v73/unsigned" ] || die "QAIRT Hexagon libraries not found under $QAIRT_SDK_ROOT"
+    require_group_id fastrpc FASTRPC_GROUP_ID
+    require_group_id dmaheap DMAHEAP_GROUP_ID
+    COMPOSE_ENV+=("FASTRPC_GROUP_ID=$FASTRPC_GROUP_ID" "DMAHEAP_GROUP_ID=$DMAHEAP_GROUP_ID")
+    ;;
+esac
 
 if [ -n "$(env_value TS_AUTHKEY "$HERE/.env" || true)" ]; then
   "$HERE/scripts/install-tailscale.sh"
-else
-  log "Tailscale auth key not set; skipping Tailscale setup."
 fi
 
-REGISTRY_HOSTS=()
-add_registry_host "$(image_env_or_default EYEPOP_RUNTIME_IMAGE "$DEFAULT_EYEPOP_RUNTIME_IMAGE")"
-add_registry_host "$(image_env_or_default EYEPOP_VLM_WORKER_IMAGE "$DEFAULT_EYEPOP_VLM_WORKER_IMAGE")"
-[ "${#REGISTRY_HOSTS[@]}" -gt 0 ] || die "no Google Artifact Registry image hosts found in compose image settings"
+registry_login
 
-for registry_host in "${REGISTRY_HOSTS[@]}"; do
-  log "authenticating Docker to ${registry_host}..."
-  docker login -u _json_key --password-stdin "https://${registry_host}" < "$GOOGLE_CREDS_JSON_PATH" >/dev/null \
-    || die "Docker login failed for ${registry_host}. Check .eyepop/creds.json and Artifact Registry permissions."
-done
+log "validating $MODE mode on $HARDWARE..."
+(cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" config --quiet)
 
 log "pulling container images..."
-( cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" pull )
+(cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" pull)
+RUNTIME_IMAGE="$(cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" config --images | sort -u | head -n 1)"
+RUNTIME_DIGEST="$(docker image inspect "$RUNTIME_IMAGE" --format '{{index .RepoDigests 0}}' 2>/dev/null || true)"
+if [ -n "$RUNTIME_DIGEST" ] && [ "$RUNTIME_DIGEST" != "<no value>" ]; then
+  log "pulled runtime image: $RUNTIME_DIGEST"
+else
+  log "pulled runtime image: $RUNTIME_IMAGE"
+fi
+if [ "$HARDWARE" = "nvidia-cuda" ]; then
+  docker run --rm --gpus all --entrypoint nvidia-smi "$RUNTIME_IMAGE" -L >/dev/null 2>&1 \
+    || die "GPU not visible in the EyePop runtime container. Check the toolkit and driver."
+  log "GPU visible in the EyePop runtime container."
+fi
 
 if [ "$START" -ne 1 ]; then
-  log "host ready and images pulled. Start when you like: (cd $HERE && docker compose ${COMPOSE_ARGS[*]} up -d)"
+  log "host ready and images pulled."
+  printf 'Start with: '
+  print_compose_command up -d
+  printf '\n'
   exit 0
 fi
 
-log "starting the stack..."
-( cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" up -d )
+log "starting $MODE mode on $HARDWARE..."
+(cd "$HERE" && docker compose "${COMPOSE_ARGS[@]}" up -d)
 
-log "waiting for agent health..."
+HEALTH_PATH=/health
+[ "$MODE" != "agent" ] || HEALTH_PATH=/agent/health
+
+log "waiting for $HEALTH_PATH..."
 for _ in $(seq 1 36); do
-  if curl -fsS http://127.0.0.1:8080/agent/health >/dev/null 2>&1; then
-    log "agent healthy."
-    log "  dashboard: http://127.0.0.1:8080/dashboard/"
-    log "  health:    curl -sf http://127.0.0.1:8080/agent/health"
-    log "  streams:   curl -sf http://127.0.0.1:8080/agent/streams"
+  if curl --connect-timeout 2 --max-time 5 -fsS \
+    "http://127.0.0.1:${HTTP_PORT}${HEALTH_PATH}" >/dev/null 2>&1; then
+    log "$MODE runtime healthy."
+    log "dashboard: http://127.0.0.1:${HTTP_PORT}/dashboard/"
     exit 0
   fi
   sleep 5
 done
 
-log "stack started but /agent/health is not ready yet. Check: (cd $HERE && docker compose ${COMPOSE_ARGS[*]} logs -f eyepop-instance)"
+RECOVERY_COMMAND="$(print_compose_command logs eyepop-instance)"
+die "runtime did not become healthy; inspect: $RECOVERY_COMMAND"

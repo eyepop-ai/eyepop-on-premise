@@ -1,0 +1,11 @@
+services:
+  volume-permissions:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-openvino:latest}
+  eyepop-instance:
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-openvino:latest}
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - ${RENDER_GROUP_ID:?set RENDER_GROUP_ID in .env}
+    environment:
+      ORT_PROVIDER_OPTION_device_type: ${OPENVINO_DEVICE_TYPE:-AUTO}

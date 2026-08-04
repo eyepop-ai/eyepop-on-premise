@@ -1,60 +1,57 @@
 # EyePop On-Premise
 
-Run the EyePop on-premise agent stack on a GPU-enabled Linux host.
+This repository is the source of truth for installing, configuring, and operating EyePop on-premise. It contains the Docker Compose package and the complete documentation for every supported mode and hardware target.
 
-_note: Supports linux hosts with nvidia accelerators only_
+## Choose a mode
+
+- **Standalone** exposes the local EyePop inference API for applications and SDKs that control each workload.
+- **Agent (Beta)** continuously manages configured streams and event outputs without an application holding an inference session open.
+
+Both modes use the same runtime, registration, persistent storage, and billing path. See [Modes](docs/concepts/modes.md) for the full comparison.
+
+## Choose hardware
+
+| Hardware | Architecture | Standalone | Agent |
+| --- | --- | --- | --- |
+| CPU | amd64 or arm64 | Supported | Beta |
+| NVIDIA CUDA | amd64 | Supported | Beta |
+| NVIDIA Jetson | arm64 | Supported | Beta |
+| Intel OpenVINO | amd64 | Supported | Beta |
+| Qualcomm QNN | arm64 | Supported | Beta |
+
+Each hardware selection uses the `latest` tag from `registry.eyepop.ai`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/README.md#hardware).
 
 ## Install
 
-1. Create `.env`:
-
-```sh
+```shell
+git clone https://github.com/eyepop-ai/eyepop-on-premise.git
+cd eyepop-on-premise
 cp .env.example .env
 ```
 
-Fill in your api key and account uuid (see onboarding document or get an api key from the dashboard: https://dashboard.eyepop.ai)
+Add the API key and account UUID from [My Servers](https://dashboard.eyepop.ai/servers) to `.env`. Agent mode also needs at least one stream configuration:
 
-```sh
-EYEPOP_API_KEY=<your api key>
-EYEPOP_ACCOUNT_UUID=<your account uuid>
-```
-
-2. Place your Google service account credentials file at `.eyepop/creds.json` relative to this cloned repo.
-
-3. Create your camera config:
-
-```sh
+```shell
 cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml
 ```
 
-Edit `agents.d/streams/camera_1.yaml` so the RTSP URL points at your camera.
+Edit the copied file and replace its example RTSP URL and credentials before installation.
 
-Optional event outputs live in `agents.d/events-config.yaml`. Enable webhook, MQTT, or NATS outputs there when downstream delivery is needed.
+Run the installer with one mode and one hardware target:
 
-4. Run the installer on your linux VM
-
-```sh
-sudo ./install.sh
+```shell
+sudo ./install.sh --mode standalone --hardware cpu
+sudo ./install.sh --mode agent --hardware nvidia-cuda
 ```
 
-If the installer adds your user to the Docker group, log out and back in before running Docker commands without `sudo`.
+The installer prompts for the EyePop registry credentials and passes the password to Docker through standard input. The runtime API is available only on `127.0.0.1:8080` by default.
 
-5. Open the dashboard:
+Continue with the [installation guide](docs/getting-started/installation.md) or browse the [documentation index](docs/README.md).
 
-```text
-http://127.0.0.1:8080/dashboard/
+## Validate this repository
+
+```shell
+bash scripts/validate.sh
 ```
 
-## Useful Commands
-
-```sh
-docker compose logs -f
-docker compose down
-docker compose down -v
-```
-
-## Tailscale support (optional)
-
-_If not familiar with tailscale, it may be a quick and secure solution for connecting across network rtsp streams._
-
-Setting `TS_AUTHKEY` in the `.env` will automatically install and setup tailscale on your host.
+The validator renders every mode and hardware combination, checks runtime image references, and verifies local documentation links.
