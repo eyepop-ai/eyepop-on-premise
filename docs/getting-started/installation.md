@@ -57,15 +57,15 @@ The installer:
 5. creates the persistent volumes and starts the runtime;
 6. waits for the selected mode's health endpoint.
 
-For unattended installation, pass registry credentials in the process environment:
+For unattended installation, run the installer in an existing root automation context and inject registry credentials through its secret manager:
 
 ```shell
-sudo EYEPOP_REGISTRY_USERNAME="$EYEPOP_REGISTRY_USERNAME" \
-  EYEPOP_REGISTRY_PASSWORD="$EYEPOP_REGISTRY_PASSWORD" \
-  ./install.sh --mode standalone --hardware cpu
+EYEPOP_REGISTRY_USERNAME="$EYEPOP_REGISTRY_USERNAME" \
+EYEPOP_REGISTRY_PASSWORD="$EYEPOP_REGISTRY_PASSWORD" \
+./install.sh --mode standalone --hardware cpu
 ```
 
-Use short-lived automation secrets and avoid saving the registry password in `.env` or shell history.
+Do not use this form from an unprivileged shell. Use short-lived automation secrets and avoid saving the registry password in `.env`, command arguments, or shell history.
 
 Use `--no-start` to prepare the host and pull images without starting the runtime.
 
@@ -92,6 +92,8 @@ docker compose logs -f eyepop-instance
 ```
 
 The first inference may take longer while the runtime downloads and caches models.
+
+Replace `8080` in the verification URLs when `EYEPOP_HTTP_PORT` selects another host port.
 
 ## Compose command shape
 

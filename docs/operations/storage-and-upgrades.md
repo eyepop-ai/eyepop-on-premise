@@ -42,4 +42,24 @@ Set `EYEPOP_RUNTIME_IMAGE` to that digest in `.env` for a controlled rollback, r
 
 ## Change mode or hardware
 
-Stop the current three-file Compose selection, then start the new selection. Keep `compose.yaml` in both commands so the project and named volumes remain the same. Confirm the target host prerequisites before changing a hardware overlay.
+Stop the current three-file Compose selection with an explicit project name:
+
+```shell
+docker compose --project-name eyepop-on-premise --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  down
+```
+
+Start the new selection with the same project name and shared Compose file:
+
+```shell
+docker compose --project-name eyepop-on-premise --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/agent.yaml \
+  -f deployments/hardware/nvidia-cuda.yaml \
+  up -d
+```
+
+Replace both overlay paths with the current and target selections. Keeping the project name and `compose.yaml` in both commands preserves the named volumes. Confirm the target host prerequisites before changing a hardware overlay.

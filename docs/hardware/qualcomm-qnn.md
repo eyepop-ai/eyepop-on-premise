@@ -16,9 +16,13 @@ Use [iQ-Studio](https://github.com/InnoIPA/iQ-Studio) for device flashing and BS
 
 ```shell
 QAIRT_SDK_ROOT=/opt/qcom/aistack/qairt/2.41.0.251128
+FASTRPC_GROUP_ID="$(getent group fastrpc | cut -d: -f3)"
+DMAHEAP_GROUP_ID="$(getent group dmaheap | cut -d: -f3)"
+[ -n "$FASTRPC_GROUP_ID" ] || { echo 'fastrpc group not found' >&2; exit 1; }
+[ -n "$DMAHEAP_GROUP_ID" ] || { echo 'dmaheap group not found' >&2; exit 1; }
 printf 'QAIRT_SDK_ROOT=%s\n' "$QAIRT_SDK_ROOT" >> .env
-printf 'FASTRPC_GROUP_ID=%s\n' "$(getent group fastrpc | cut -d: -f3)" >> .env
-printf 'DMAHEAP_GROUP_ID=%s\n' "$(getent group dmaheap | cut -d: -f3)" >> .env
+printf 'FASTRPC_GROUP_ID=%s\n' "$FASTRPC_GROUP_ID" >> .env
+printf 'DMAHEAP_GROUP_ID=%s\n' "$DMAHEAP_GROUP_ID" >> .env
 ```
 
 ```shell

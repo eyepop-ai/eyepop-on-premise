@@ -1,6 +1,6 @@
 # Billing and connectivity
 
-On-premise inference is metered through durable usage events. The media and inference results stay on the local host; the runtime sends usage metadata to EyePop.
+On-premise inference is metered through durable usage events. Media and inference results stay on the local host by default; configured Agent outputs can send selected results to webhook, MQTT, or NATS destinations. The runtime sends usage metadata to EyePop.
 
 ## End-to-end flow
 
@@ -31,7 +31,9 @@ docker compose logs --since 30m eyepop-instance
 Confirm DNS and TLS reachability from the host:
 
 ```shell
-curl --fail --head https://compute.eyepop.ai
+curl --head --silent --show-error --output /dev/null \
+  --write-out 'HTTP %{http_code}\n' \
+  https://compute.eyepop.ai
 ```
 
 Do not delete the private volume as a troubleshooting step. Preserve it while collecting logs so queued events can be retried after connectivity is restored.

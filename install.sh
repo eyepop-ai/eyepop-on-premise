@@ -66,6 +66,7 @@ COMPOSE_ARGS=(
   -f "$HERE/deployments/modes/$MODE.yaml"
   -f "$HERE/deployments/hardware/$HARDWARE.yaml"
 )
+COMPOSE_ENV=()
 
 require_group_id() {
   local group_name="$1"
@@ -128,6 +129,7 @@ case "$HARDWARE" in
   intel-openvino)
     [ -d /dev/dri ] || die "/dev/dri is required for Intel accelerator access"
     require_group_id render RENDER_GROUP_ID
+    COMPOSE_ENV+=("RENDER_GROUP_ID=$RENDER_GROUP_ID")
     ;;
   qualcomm-qnn)
     QAIRT_SDK_ROOT="$(require_env QAIRT_SDK_ROOT "$HERE/.env")"
@@ -135,6 +137,7 @@ case "$HARDWARE" in
     [ -d "$QAIRT_SDK_ROOT/lib/hexagon-v73/unsigned" ] || die "QAIRT Hexagon libraries not found under $QAIRT_SDK_ROOT"
     require_group_id fastrpc FASTRPC_GROUP_ID
     require_group_id dmaheap DMAHEAP_GROUP_ID
+    COMPOSE_ENV+=("FASTRPC_GROUP_ID=$FASTRPC_GROUP_ID" "DMAHEAP_GROUP_ID=$DMAHEAP_GROUP_ID")
     ;;
 esac
 
@@ -152,7 +155,12 @@ log "pulling container images..."
 
 if [ "$START" -ne 1 ]; then
   log "host ready and images pulled."
-  printf 'Start with: cd %q && docker compose' "$HERE"
+  printf 'Start with: cd %q &&' "$HERE"
+  if [ "${#COMPOSE_ENV[@]}" -gt 0 ]; then
+    printf ' env'
+    printf ' %q' "${COMPOSE_ENV[@]}"
+  fi
+  printf ' docker compose'
   printf ' %q' "${COMPOSE_ARGS[@]}"
   printf ' up -d\n'
   exit 0

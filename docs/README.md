@@ -1,6 +1,6 @@
 # EyePop On-Premise documentation
 
-EyePop on-premise runs the EyePop inference runtime inside infrastructure you control. Images, video, streams, and inference results remain on that infrastructure. The runtime makes outbound connections for registration, model access, and usage delivery.
+EyePop on-premise runs the EyePop inference runtime inside infrastructure you control. Images, video, streams, and inference results remain on that infrastructure by default. Configured Agent outputs can send selected results to webhook, MQTT, or NATS destinations. The runtime makes outbound connections for registration, model access, and usage delivery.
 
 ## Start here
 

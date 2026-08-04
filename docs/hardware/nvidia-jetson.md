@@ -21,4 +21,4 @@ sudo ./install.sh --mode agent --hardware nvidia-jetson
 
 During inference, use `tegrastats` to confirm that `GR3D_FREQ` rises above zero.
 
-For a local V4L2 camera, add `allow-v4l2: true` to the selected instance YAML and add a `/dev/video*` device mapping to the Jetson hardware overlay for each required camera.
+For a local V4L2 camera, add `allow-v4l2: true` to the selected instance YAML. Discover devices with `ls -1 /dev/video*`, then add an explicit one-to-one mapping such as `/dev/video0:/dev/video0` to the Jetson hardware overlay for each required camera.

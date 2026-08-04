@@ -11,12 +11,20 @@ Use the registry username and password supplied when the server was created in t
 ## The runtime is unhealthy
 
 ```shell
-docker compose ps
-docker compose logs --tail 200 eyepop-instance
+docker compose --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  ps
+docker compose --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  logs --tail 200 eyepop-instance
 curl --verbose http://127.0.0.1:8080/health
 ```
 
-Agent mode uses `/agent/health`. A first start can take longer while the instance registers and downloads models.
+Replace the mode and hardware overlays with the deployed selection. Agent mode uses `/agent/health`; Standalone uses `/health`. Replace port `8080` when `EYEPOP_HTTP_PORT` selects another host port. A first start can take longer while the instance registers and downloads models.
 
 ## NVIDIA CUDA is unavailable
 

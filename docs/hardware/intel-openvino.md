@@ -15,7 +15,9 @@ Use this target for Intel GPU or NPU acceleration on an amd64 host.
 Add the host render group ID to `.env`:
 
 ```shell
-printf 'RENDER_GROUP_ID=%s\n' "$(getent group render | cut -d: -f3)" >> .env
+RENDER_GROUP_ID="$(getent group render | cut -d: -f3)"
+[ -n "$RENDER_GROUP_ID" ] || { echo 'render group not found' >&2; exit 1; }
+printf 'RENDER_GROUP_ID=%s\n' "$RENDER_GROUP_ID" >> .env
 ```
 
 `OPENVINO_DEVICE_TYPE` defaults to `AUTO`. Set it to `GPU`, `NPU`, or another target supported by the installed Intel runtime when the deployment needs an explicit selection.

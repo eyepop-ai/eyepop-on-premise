@@ -60,15 +60,6 @@ for mode in "${MODES[@]}"; do
   done
 done
 
-if grep -RInE \
-  --exclude-dir=.git \
-  --exclude-dir=superpowers \
-  --exclude='CHANGELOG.md' \
-  '(us-[a-z0-9-]+-docker\.pkg\.dev|registry\.eyepop\.ai/ai/runtime-[a-z0-9-]+:v[0-9])' \
-  "$ROOT"; then
-  fail "public examples must use registry.eyepop.ai runtime images with the latest tag"
-fi
-
 python3 - "$ROOT" <<'PY'
 import re
 import sys
@@ -77,18 +68,47 @@ from urllib.parse import unquote
 
 root = Path(sys.argv[1])
 missing = []
+invalid_images = []
+runtime_pattern = re.compile(
+    r"\b(?:[a-z0-9.-]+(?::[0-9]+)?/)+runtime-[a-z0-9-]+:[a-zA-Z0-9._-]+"
+)
+approved_pattern = re.compile(
+    r"^registry\.eyepop\.ai/ai/runtime-[a-z0-9-]+:latest$"
+)
+
+for document in root.rglob("*"):
+    if not document.is_file() or ".git" in document.parts:
+        continue
+    if "superpowers/plans" in document.as_posix() or document.name == "CHANGELOG.md":
+        continue
+    try:
+        content = document.read_text()
+    except UnicodeDecodeError:
+        continue
+    for image in runtime_pattern.findall(content):
+        if not approved_pattern.match(image):
+            invalid_images.append(f"{document.relative_to(root)} -> {image}")
 
 for document in [root / "README.md", *(root / "docs").rglob("*.md")]:
     if "superpowers/plans" in document.as_posix():
         continue
     content = document.read_text()
-    for target in re.findall(r"(?<!!)\[[^]]+\]\(([^)]+)\)", content):
+    for target in re.findall(r"!?\[[^]]+\]\(([^)]+)\)", content):
         target = target.strip().split(maxsplit=1)[0].strip("<>")
         if target.startswith(("http://", "https://", "mailto:", "#")):
             continue
         path = unquote(target.split("#", 1)[0])
         if path and not (document.parent / path).resolve().exists():
             missing.append(f"{document.relative_to(root)} -> {target}")
+
+if invalid_images:
+    print(
+        "validation failed: public examples must use "
+        "registry.eyepop.ai runtime images with the latest tag",
+        file=sys.stderr,
+    )
+    print("\n".join(invalid_images), file=sys.stderr)
+    raise SystemExit(1)
 
 if missing:
     print("validation failed: broken local Markdown links", file=sys.stderr)

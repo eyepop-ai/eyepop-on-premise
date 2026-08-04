@@ -28,4 +28,6 @@ curl --fail http://127.0.0.1:8080/agent/streams
 docker compose logs -f eyepop-instance
 ```
 
+Replace `8080` in both URLs when `EYEPOP_HTTP_PORT` selects another host port.
+
 Agent history is stored at `/opt/eyepop/private/agent-history.db` in the `eyepop_instance_private` volume. Recreating the container preserves it; deleting the private volume removes it.
