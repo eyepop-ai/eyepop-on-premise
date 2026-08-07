@@ -1,8 +1,8 @@
 services:
   volume-permissions:
-    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cuda-jetson:latest}
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cuda:latest-jetpack6}
   eyepop-instance:
-    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cuda-jetson:latest}
+    image: ${EYEPOP_RUNTIME_IMAGE:-registry.eyepop.ai/ai/runtime-cuda:latest-jetpack6}
     runtime: nvidia
     environment:
       NVIDIA_VISIBLE_DEVICES: all
