@@ -1,0 +1,51 @@
+name: Agent config check
+
+# Validates the shipped agents.d templates against the strict stream-config
+# loader in eyepop-instance. The loader skips "*.example.yaml" at runtime, but
+# docs/configuration/agent.md tells operators to copy those templates to real
+# stream files — the test simulates that copy, so a template that drifts from
+# the schema fails here instead of at a customer site.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-templates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v7
+        with:
+          repository: eyepop-ai/eyepop-instance
+          token: ${{ secrets.GH_TOKEN }}
+          ref: main
+          path: eyepop-instance
+          persist-credentials: false
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: eyepop-instance/go.mod
+          cache-dependency-path: eyepop-instance/go.sum
+
+      - name: Validate agents.d templates
+        working-directory: eyepop-instance
+        env:
+          AGENT_TEMPLATE_DIRS: ${{ github.workspace }}/agents.d
+        run: |
+          go test ./internal/agent/config/ -run TestShippedTemplateConfigsLoad -v 2>&1 | tee test.out
+          # go test exits 0 when -run matches nothing; require the test to have run and passed.
+          grep -q -- "--- PASS: TestShippedTemplateConfigsLoad" test.out
