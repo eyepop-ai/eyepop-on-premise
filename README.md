@@ -1,6 +1,6 @@
 # EyePop On-Premise
 
-This repository is the source of truth for installing, configuring, and operating EyePop on-premise. It contains the Docker Compose package and the complete documentation for every supported mode and hardware target.
+The [eyepop-on-premise repository](https://github.com/eyepop-ai/eyepop-on-premise) is the source of truth for installing, configuring, and operating EyePop on-premise. It contains the Docker Compose package and the complete documentation for every supported mode and hardware target.
 
 ## Choose a mode
 
@@ -19,7 +19,7 @@ Both modes use the same runtime, registration, persistent storage, and billing p
 | Intel OpenVINO | amd64 | Supported | Beta |
 | Qualcomm QNN | arm64 | Supported | Beta |
 
-Each hardware selection uses the `latest` tag from `registry.eyepop.ai`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/README.md#hardware).
+Most hardware selections use the `latest` tag from `registry.eyepop.ai`; NVIDIA Jetson uses `latest-jetpack6`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/README.md#hardware).
 
 ## Install
 

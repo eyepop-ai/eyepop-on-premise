@@ -53,7 +53,7 @@ The installer:
 1. validates the selected mode and host integration;
 2. installs Docker when necessary;
 3. prompts for the registry credentials supplied by the EyePop dashboard;
-4. pulls the hardware-specific `latest` image;
+4. pulls the hardware-specific runtime image (`latest` for standard targets and `latest-jetpack6` for NVIDIA Jetson);
 5. creates the persistent volumes and starts the runtime;
 6. waits for the selected mode's health endpoint.
 
