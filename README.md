@@ -7,7 +7,7 @@ The [eyepop-on-premise repository](https://github.com/eyepop-ai/eyepop-on-premis
 - **Standalone** exposes the local EyePop inference API for applications and SDKs that control each workload.
 - **Agent (Beta)** continuously manages configured streams and event outputs without an application holding an inference session open.
 
-Both modes use the same runtime, registration, persistent storage, and billing path. See [Modes](docs/concepts/modes.md) for the full comparison.
+Both modes use the same runtime, registration, persistent storage, and billing path. See [Modes](docs/gitbook/concepts/modes.md) for the full comparison.
 
 ## Choose hardware
 
@@ -19,7 +19,7 @@ Both modes use the same runtime, registration, persistent storage, and billing p
 | Intel OpenVINO | amd64 | Supported | Beta |
 | Qualcomm QNN | arm64 | Supported | Beta |
 
-Most hardware selections use the `latest` tag from `registry.eyepop.ai`; NVIDIA Jetson uses `latest-jetpack6`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/README.md#hardware).
+Most hardware selections use the `latest` tag from `registry.eyepop.ai`; NVIDIA Jetson uses `latest-jetpack6`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/gitbook/README.md#hardware).
 
 ## Install
 
@@ -46,7 +46,7 @@ sudo ./install.sh --mode agent --hardware nvidia-cuda
 
 The installer prompts for the EyePop registry credentials and passes the password to Docker through standard input. The runtime API is available only on `127.0.0.1:8080` by default.
 
-Continue with the [installation guide](docs/getting-started/installation.md) or browse the [documentation index](docs/README.md).
+Continue with the [installation guide](docs/gitbook/getting-started/installation.md) or browse the [documentation index](docs/gitbook/README.md).
 
 ## Validate this repository
 
