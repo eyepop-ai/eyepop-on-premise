@@ -7,20 +7,20 @@ MODES=(standalone agent)
 HARDWARE=(cpu nvidia-cuda nvidia-jetson intel-openvino qualcomm-qnn)
 REQUIRED_DOCS=(
   README.md
-  docs/README.md
-  docs/concepts/modes.md
-  docs/getting-started/installation.md
-  docs/configuration/runtime.md
-  docs/configuration/agent.md
-  docs/hardware/cpu.md
-  docs/hardware/nvidia-cuda.md
-  docs/hardware/nvidia-jetson.md
-  docs/hardware/intel-openvino.md
-  docs/hardware/qualcomm-qnn.md
-  docs/operations/security-and-networking.md
-  docs/operations/storage-and-upgrades.md
-  docs/operations/billing-and-connectivity.md
-  docs/operations/troubleshooting.md
+  docs/gitbook/README.md
+  docs/gitbook/concepts/modes.md
+  docs/gitbook/getting-started/installation.md
+  docs/gitbook/configuration/runtime.md
+  docs/gitbook/configuration/agent.md
+  docs/gitbook/hardware/cpu.md
+  docs/gitbook/hardware/nvidia-cuda.md
+  docs/gitbook/hardware/nvidia-jetson.md
+  docs/gitbook/hardware/intel-openvino.md
+  docs/gitbook/hardware/qualcomm-qnn.md
+  docs/gitbook/operations/security-and-networking.md
+  docs/gitbook/operations/storage-and-upgrades.md
+  docs/gitbook/operations/billing-and-connectivity.md
+  docs/gitbook/operations/troubleshooting.md
 )
 
 fail() {
