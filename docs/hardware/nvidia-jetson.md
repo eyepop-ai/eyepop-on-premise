@@ -12,7 +12,7 @@ Use this target for Jetson Orin AGX and NX devices. The arm64 image includes the
 - JetPack 6.2.1 with Jetson Linux (L4T) 36.4.4; `registry.eyepop.ai/ai/runtime-cuda:latest-jetpack6` is validated on this release pair
 - Docker with the NVIDIA runtime configured by JetPack
 
-The JetPack build lives in the `runtime-cuda` repository under a `-jetpack6` tag suffix — it is a tag, not a separate image. Keep the suffix: the untagged `runtime-cuda:latest` is the datacenter build and does not carry the Orin compatibility libraries. Do not mount host CUDA libraries into the container.
+The JetPack build lives in the `runtime-cuda` repository under a `-jetpack6` tag suffix — it is a tag, not a separate image. Keep the suffix: `registry.eyepop.ai/ai/runtime-cuda:latest` is the datacenter build and does not carry the Orin compatibility libraries. Do not mount host CUDA libraries into the container.
 
 ```shell
 sudo ./install.sh --mode standalone --hardware nvidia-jetson
