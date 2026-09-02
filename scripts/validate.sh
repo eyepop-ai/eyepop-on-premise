@@ -85,11 +85,14 @@ runtime_pattern = re.compile(
     r"(?::[a-zA-Z0-9._-]+|@sha256:[a-fA-F0-9]{64})"
 )
 approved_pattern = re.compile(
-    r"^registry\.eyepop\.ai/ai/runtime-[a-z0-9-]+:latest$"
+    r"^registry\.eyepop\.ai/ai/"
+    r"(?:runtime-[a-z0-9-]+:latest|runtime-cuda:latest-jetpack6)$"
 )
 
 for document in root.rglob("*"):
     if not document.is_file() or ".git" in document.parts:
+        continue
+    if document == root / "scripts/validate.sh":
         continue
     if "superpowers/plans" in document.as_posix() or document.name == "CHANGELOG.md":
         continue
