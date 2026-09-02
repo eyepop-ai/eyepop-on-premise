@@ -1,0 +1,75 @@
+name: Publish On-Premise docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - docs/**
+      - .github/workflows/publish-docs.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-on-premise-docs
+  cancel-in-progress: false
+
+env:
+  EXTERNAL_DOCS_REPO: eyepop-ai/eyepop-docs-external
+  DOCS_BASE_BRANCH: main
+
+jobs:
+  publish:
+    name: Mirror On-Premise docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout eyepop-on-premise
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Stage public documentation
+        run: |
+          docs_stage_dir="$(mktemp -d)"
+          cp README.md "$docs_stage_dir/README.md"
+          mkdir -p "$docs_stage_dir/docs"
+          rsync -a --prune-empty-dirs \
+            --include '*/' \
+            --include '*.md' \
+            --exclude '*' \
+            docs/ "$docs_stage_dir/docs/"
+          echo "DOCS_STAGE_DIR=$docs_stage_dir" >> "$GITHUB_ENV"
+
+      - name: Checkout external docs repo
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.EXTERNAL_DOCS_REPO }}
+          ref: ${{ env.DOCS_BASE_BRANCH }}
+          token: ${{ secrets.GH_TOKEN }}
+          path: docs-external
+          persist-credentials: false
+
+      - name: Mirror the On-Premise pages
+        run: |
+          mkdir -p docs-external/install/on-premise
+          rsync -a --delete \
+            "$DOCS_STAGE_DIR/" \
+            docs-external/install/on-premise/
+
+      - name: Open or refresh external docs PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          path: docs-external
+          base: ${{ env.DOCS_BASE_BRANCH }}
+          branch: on-premise-docs/sync
+          delete-branch: true
+          commit-message: "docs: sync On-Premise docs from eyepop-on-premise"
+          title: "docs: sync On-Premise docs from eyepop-on-premise"
+          body: |
+            Mirrors the public documentation from `eyepop-on-premise@${{ github.sha }}`.
+
+            Every file under `install/on-premise/` is overwritten by this workflow.
+            Edit `README.md` or `docs/` in eyepop-on-premise instead.
