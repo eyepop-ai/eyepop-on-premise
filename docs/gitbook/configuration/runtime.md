@@ -1,8 +1,13 @@
+---
+description: Account registration, runtime settings, and local API behavior
+icon: gear
+---
+
 # Runtime configuration
 
 The shared Compose file passes account registration through environment variables and mounts a mode-specific runtime configuration at `/etc/eyepop-instance.yml`.
 
-## Account environment
+### Account environment
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
@@ -14,7 +19,7 @@ The shared Compose file passes account registration through environment variable
 
 The hardware overlays default to the matching `registry.eyepop.ai/ai/runtime-*:latest` image. Do not use an image built for a different accelerator.
 
-## Runtime files
+### Runtime files
 
 - `instance/standalone.yaml` enables the local runtime API without Agent stream management.
 - `instance/agent.yaml` enables Agent configuration and persistent Agent history.
@@ -27,7 +32,7 @@ Both mode files configure:
 - `/tmp` as an 8 GiB in-memory temporary filesystem;
 - the dashboard at `/dashboard` and Swagger routes.
 
-## Local API
+### Local API
 
 Compose publishes the API as `127.0.0.1:8080` by default. Set `EYEPOP_HTTP_PORT` to change the host port without changing the container port.
 

@@ -1,3 +1,8 @@
+---
+description: The Hexagon NPU on validated Qualcomm arm64 platforms
+icon: microchip
+---
+
 # Qualcomm QNN
 
 Use this arm64 target for the Hexagon NPU on the validated Innodisk EXEC-Q911 platform.
@@ -6,7 +11,7 @@ Use this arm64 target for the Hexagon NPU on the validated Innodisk EXEC-Q911 pl
 - Hardware identifier: `qualcomm-qnn`
 - Container access: FastRPC, DMA-heap, QAIRT libraries, host libraries, and privileged device access
 
-## Host requirements
+### Host requirements
 
 - Innodisk EXEC-Q911 with the Innodisk-provided Ubuntu image
 - QAIRT Community 2.41.0.251128 installed on the host

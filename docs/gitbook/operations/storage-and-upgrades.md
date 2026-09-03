@@ -1,6 +1,11 @@
+---
+description: Persistent volumes and how to move to a new image
+icon: boxes-stacked
+---
+
 # Storage and upgrades
 
-## Persistent data
+### Persistent data
 
 The package creates two named volumes:
 
@@ -15,7 +20,7 @@ Back up the private volume according to the host's container-storage policy. Pro
 
 The installer prints the pulled runtime image digest. Record that value with the deployment configuration on first installation so a later rollback can restore the exact image even after the `latest` tag moves.
 
-## Update
+### Update
 
 Use the same mode and hardware overlays that started the deployment. This example updates Standalone on CPU:
 
@@ -48,7 +53,7 @@ docker compose --project-name eyepop-on-premise --env-file .env \
 
 The hardware overlays track the `latest` tag. The first commands resolve the exact image ID used by the running service to its repository digest before `pull` moves the local tag. Set `EYEPOP_RUNTIME_IMAGE` in `.env` to the digest printed as `Rollback image` for a controlled rollback, recreate the service with the same project and overlays, and remove the override after the issue is resolved.
 
-## Change mode or hardware
+### Change mode or hardware
 
 Stop the current three-file Compose selection with an explicit project name:
 

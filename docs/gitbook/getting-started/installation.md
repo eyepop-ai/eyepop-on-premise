@@ -1,6 +1,11 @@
+---
+description: Prepare the host, register the instance, and start the runtime
+icon: download
+---
+
 # Installation
 
-## Requirements
+### Requirements
 
 - A supported Linux host for the selected [hardware target](../README.md#hardware)
 - Docker Engine with the Compose plugin
@@ -9,7 +14,7 @@
 
 The installer supports Debian and Ubuntu hosts that use `apt`. Hardware guides list additional drivers, runtimes, and device access.
 
-## 1. Clone and configure
+### 1. Clone and configure
 
 ```shell
 git clone https://github.com/eyepop-ai/eyepop-on-premise.git
@@ -27,7 +32,7 @@ EYEPOP_ACCOUNT_UUID=YOUR_ACCOUNT_UUID
 
 Treat `.env` as a secret. It is ignored by Git.
 
-## 2. Configure Agent streams
+### 2. Configure Agent streams
 
 Skip this step for Standalone mode. For Agent mode, copy the example and replace its RTSP URL:
 
@@ -37,7 +42,7 @@ cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml
 
 See [Agent configuration](../configuration/agent.md) before enabling event outputs.
 
-## 3. Install and start
+### 3. Install and start
 
 Pass one mode and one hardware identifier:
 
@@ -71,7 +76,7 @@ Docker stores registry authentication in its configured credential store. After 
 
 Use `--no-start` to prepare the host and pull images without starting the runtime.
 
-## 4. Verify
+### 4. Verify
 
 Standalone:
 
@@ -97,7 +102,7 @@ The first inference may take longer while the runtime downloads and caches model
 
 Replace `8080` in the verification URLs when `EYEPOP_HTTP_PORT` selects another host port.
 
-## Compose command shape
+### Compose command shape
 
 The installer combines the shared file with one mode overlay and one hardware overlay. Use the same three files for later Compose operations:
 

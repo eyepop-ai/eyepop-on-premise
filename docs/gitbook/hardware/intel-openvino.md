@@ -1,3 +1,8 @@
+---
+description: Intel GPU and NPU acceleration on amd64 hosts
+icon: microchip
+---
+
 # Intel OpenVINO
 
 Use this target for Intel GPU or NPU acceleration on an amd64 host.
@@ -6,7 +11,7 @@ Use this target for Intel GPU or NPU acceleration on an amd64 host.
 - Hardware identifier: `intel-openvino`
 - Container access: `/dev/dri` and the host `render` group
 
-## Host requirements
+### Host requirements
 
 - Ubuntu 24.04 on amd64
 - Intel compute runtime for the selected accelerator
