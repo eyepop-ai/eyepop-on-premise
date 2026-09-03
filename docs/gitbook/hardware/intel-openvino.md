@@ -30,7 +30,6 @@ printf 'RENDER_GROUP_ID=%s\n' "$RENDER_GROUP_ID" >> .env
 
 ```shell
 sudo ./install.sh --mode standalone --hardware intel-openvino
-sudo ./install.sh --mode agent --hardware intel-openvino
 ```
 
 Run a representative inference to confirm accelerator use. Runtime health alone does not prove that OpenVINO selected the intended device.

@@ -21,7 +21,6 @@ The JetPack build lives in the `runtime-cuda` repository under a `-jetpack6` tag
 
 ```shell
 sudo ./install.sh --mode standalone --hardware nvidia-jetson
-sudo ./install.sh --mode agent --hardware nvidia-jetson
 ```
 
 During inference, use `tegrastats` to confirm that `GR3D_FREQ` rises above zero.

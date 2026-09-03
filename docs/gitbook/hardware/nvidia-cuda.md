@@ -21,7 +21,6 @@ The installer derives the Docker repository from the host distribution and coden
 
 ```shell
 sudo ./install.sh --mode standalone --hardware nvidia-cuda
-sudo ./install.sh --mode agent --hardware nvidia-cuda
 ```
 
 After startup, run a representative inference while observing `nvidia-smi`. Health and readiness confirm service availability, not accelerator utilization.

@@ -8,11 +8,9 @@ HARDWARE=(cpu nvidia-cuda nvidia-jetson intel-openvino qualcomm-qnn)
 REQUIRED_DOCS=(
   README.md
   docs/gitbook/README.md
-  docs/gitbook/concepts/modes.md
   docs/gitbook/getting-started/installation.md
   docs/gitbook/getting-started/first-inference.md
   docs/gitbook/configuration/runtime.md
-  docs/gitbook/configuration/agent.md
   docs/gitbook/hardware/cpu.md
   docs/gitbook/hardware/nvidia-cuda.md
   docs/gitbook/hardware/nvidia-jetson.md
