@@ -85,7 +85,7 @@ curl -sS -X PATCH \
 
 Predictions come back as JSONL, one per line — one line for an image, one per frame for a video.
 
-The runtime requires no credential here: it is published on `127.0.0.1` by default, and that binding is the boundary — `eyepop instance init --bind` is the only thing that widens it. Do not expose the port to other machines without an authenticated layer in front of it.
+The runtime requires no credential here: for a CLI-provisioned instance it is published on `127.0.0.1` by default, and that binding is the boundary — only `eyepop instance init --bind`, or the equivalent `bind:` key in its `--config` file, widens it. Do not expose the port to other machines without an authenticated layer in front of it.
 {% endtab %}
 
 {% tab title="Python" %}
