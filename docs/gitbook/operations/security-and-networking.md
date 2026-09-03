@@ -9,9 +9,9 @@ icon: shield-halved
 
 The shared Compose file publishes port 8080 on `127.0.0.1`, so another machine cannot connect directly. The supplied package does not provide a configurable bind address.
 
-For remote access, place an authenticated reverse proxy or equivalent relay in front of the loopback endpoint. Bind that access layer to a private interface and restrict it through a VPN, private overlay network, or firewall policy for known application hosts.
+Do not publish the runtime API, dashboard, or an unauthenticated relay directly to the public internet. The dashboard, Swagger, and `/metrics` are enabled without their own login in the supplied instance configuration, so anything that reaches the port can read them.
 
-Do not publish the runtime API, dashboard, or an unauthenticated relay directly to the public internet. The local dashboard and Swagger routes are enabled without their own login in the supplied instance configuration.
+[Remote access](remote-access.md) covers the supported ways to reach the instance from another machine, and to reach cameras that are not on the instance's network.
 
 ### Secrets
 
@@ -26,7 +26,7 @@ The host needs outbound HTTPS for:
 - `registry.eyepop.ai` to pull runtime images;
 - `compute.eyepop.ai` to register the instance, coordinate model access, and deliver usage.
 
-Agent camera sources and configured event destinations must be reachable from the container network. Tailscale setup is optional and is enabled only when `TS_AUTHKEY` is present in `.env`.
+Agent camera sources and configured event destinations must be reachable from the container network. The optional Tailscale step runs only when `TS_AUTHKEY` is present in `.env`; see [Remote access](remote-access.md).
 
 ### Hardware access
 

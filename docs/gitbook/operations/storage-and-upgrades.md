@@ -53,6 +53,29 @@ docker compose --project-name eyepop-on-premise --env-file .env \
 
 The hardware overlays track the `latest` tag. The first commands resolve the exact image ID used by the running service to its repository digest before `pull` moves the local tag. Set `EYEPOP_RUNTIME_IMAGE` in `.env` to the digest printed as `Rollback image` for a controlled rollback, recreate the service with the same project and overlays, and remove the override after the issue is resolved.
 
+### Remove the deployment
+
+Stop and delete the containers, keeping the volumes:
+
+```shell
+docker compose --project-name eyepop-on-premise --env-file .env \
+  -f compose.yaml \
+  -f deployments/modes/standalone.yaml \
+  -f deployments/hardware/cpu.yaml \
+  down
+```
+
+Add `-v` to that command to delete the named volumes as well. That discards registration state, any usage still queued for delivery, Agent history, and the model cache. Confirm the usage spool has drained before doing it — see [Billing and connectivity](billing-and-connectivity.md).
+
+Then remove what lives outside Compose:
+
+```shell
+sudo docker logout registry.eyepop.ai
+sudo rm -f .env
+```
+
+Deleting the instance from the EyePop account is a separate step, in [My Servers](https://dashboard.eyepop.ai/servers).
+
 ### Change mode or hardware
 
 Stop the current three-file Compose selection with an explicit project name:

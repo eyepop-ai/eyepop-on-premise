@@ -6,8 +6,8 @@ source:
   media_cache_seconds: 30
 jobs:
   - id: vehicle_tracking
-    insights:
-      enabled: true
+    events:
+      insights: true
     pop:
       components:
         - type: inference
