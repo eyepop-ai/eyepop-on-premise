@@ -40,5 +40,5 @@ jobs:
       - uses: ./.github/eyepop-actions/publish-docs
         with:
           sources: |
-            docs/gitbook/:install/on-premise
+            docs/gitbook/:deploying/on-premise
           token: ${{ secrets.GH_TOKEN }}

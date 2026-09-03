@@ -8,7 +8,6 @@ HARDWARE=(cpu nvidia-cuda nvidia-jetson intel-openvino qualcomm-qnn)
 # Published to docs.eyepop.ai/on-premise.
 PUBLISHED_DOCS=(
   docs/gitbook/README.md
-  docs/gitbook/quickstart.md
 )
 
 # Kept in the repository, not published.
