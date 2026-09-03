@@ -2,7 +2,7 @@
 
 Agent mode is not part of the published documentation yet. These pages are
 kept here so the work is not lost, and are excluded from `docs/gitbook`,
-which is mirrored to [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise).
+which is mirrored to [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise).
 
 - [Modes](modes.md) — Standalone and Agent compared
 - [Agent configuration](configuration.md) — stream definitions and event outputs

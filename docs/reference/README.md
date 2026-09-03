@@ -1,8 +1,8 @@
 # Compose package reference (not published)
 
 The Docker Compose package in this repository, documented in full. These pages
-are not published: [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise)
-carries a quickstart built on `eyepop instance init`, and this is the depth
+are not published: [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise)
+carries one page built on `eyepop instance init`, and this is the depth
 behind it — the manual install, every configuration key, and operations.
 
 The package supports all five hardware targets and both modes. The CLI

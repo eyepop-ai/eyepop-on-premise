@@ -2,7 +2,7 @@
 
 The Docker Compose package for running the EyePop inference runtime on your own hardware.
 
-**📖 Quickstart: [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise)**
+**📖 Docs: [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise)**
 
 Most machines do not need this package. The CLI installs and manages an instance in one command:
 
@@ -46,7 +46,7 @@ Full instructions are in [`docs/reference`](docs/reference/README.md).
 
 | Directory | Published | Contents |
 | --- | --- | --- |
-| [`docs/gitbook`](docs/gitbook) | Yes, to [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise) | The quickstart: create an instance, change its Pop, run inference |
+| [`docs/gitbook`](docs/gitbook) | Yes, to [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise) | One page: create an instance, change its Pop, run inference |
 | [`docs/reference`](docs/reference/README.md) | No | This package in full: manual install, configuration keys, hardware, operations |
 | [`docs/agent`](docs/agent/README.md) | No | Agent mode, held back until it is announced |
 
