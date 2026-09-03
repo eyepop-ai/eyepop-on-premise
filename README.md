@@ -1,6 +1,10 @@
 # EyePop On-Premise
 
-The [eyepop-on-premise repository](https://github.com/eyepop-ai/eyepop-on-premise) is the source of truth for installing, configuring, and operating EyePop on-premise. It contains the Docker Compose package and the complete documentation for every supported mode and hardware target.
+This repository is the Docker Compose package for running EyePop on-premise, and the source of truth for its documentation.
+
+**📖 Read the docs: [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise)**
+
+The pages under [`docs/gitbook`](docs/gitbook) are published there — edit them here and the site follows.
 
 ## Choose a mode
 
@@ -46,7 +50,7 @@ sudo ./install.sh --mode agent --hardware nvidia-cuda
 
 The installer prompts for the EyePop registry credentials and passes the password to Docker through standard input. The runtime API is available only on `127.0.0.1:8080` by default.
 
-Continue with the [installation guide](docs/gitbook/getting-started/installation.md) or browse the [documentation index](docs/gitbook/README.md).
+Continue with [First inference](docs/gitbook/getting-started/first-inference.md) to run a Pop against the instance, or browse the [documentation index](docs/gitbook/README.md).
 
 ## Validate this repository
 

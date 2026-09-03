@@ -10,6 +10,7 @@ REQUIRED_DOCS=(
   docs/gitbook/README.md
   docs/gitbook/concepts/modes.md
   docs/gitbook/getting-started/installation.md
+  docs/gitbook/getting-started/first-inference.md
   docs/gitbook/configuration/runtime.md
   docs/gitbook/configuration/agent.md
   docs/gitbook/hardware/cpu.md
@@ -17,6 +18,7 @@ REQUIRED_DOCS=(
   docs/gitbook/hardware/nvidia-jetson.md
   docs/gitbook/hardware/intel-openvino.md
   docs/gitbook/hardware/qualcomm-qnn.md
+  docs/gitbook/operations/remote-access.md
   docs/gitbook/operations/security-and-networking.md
   docs/gitbook/operations/storage-and-upgrades.md
   docs/gitbook/operations/billing-and-connectivity.md

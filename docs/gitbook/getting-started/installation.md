@@ -102,6 +102,8 @@ The first inference may take longer while the runtime downloads and caches model
 
 Replace `8080` in the verification URLs when `EYEPOP_HTTP_PORT` selects another host port.
 
+Continue with [First inference](first-inference.md) to run a Pop against the instance.
+
 ### Compose command shape
 
 The installer combines the shared file with one mode overlay and one hardware overlay. Use the same three files for later Compose operations:
