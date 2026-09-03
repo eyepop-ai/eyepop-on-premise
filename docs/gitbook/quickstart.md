@@ -1,5 +1,5 @@
 ---
-description: Create an instance, change its Pop, and send it work
+description: Create an instance, see what it is running, and send it work
 icon: bolt
 ---
 
@@ -24,7 +24,29 @@ curl --fail http://127.0.0.1:8080/ready
 
 `/health` means the process is up; `/ready` means it can accept work. A new instance is healthy before it is ready, while it registers and downloads its first model.
 
-See [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise) for the `init` flags, hardware profiles, and how to repair or remove an instance.
+### See what you have
+
+`eyepop system` reports what this machine is — Docker and its daemon, credentials, the accelerator it found and the runtime image that implies, whether an instance is configured, and exactly what gets sent to EyePop when one is registered. It only reports, and always exits 0.
+
+```bash
+eyepop system
+```
+
+`eyepop get instances` lists every on-premise instance on the account, not just this machine's:
+
+```bash
+eyepop get instances
+```
+
+Both take `--json` for scripting.
+
+To see what the runtime itself is doing:
+
+```bash
+eyepop instance logs --tail 50
+```
+
+`--follow` streams. For the rest — `stop`, `start`, `restart`, repairing an instance, and removing one — see [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise).
 
 ### Change the Pop it serves
 
