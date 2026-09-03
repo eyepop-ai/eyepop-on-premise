@@ -37,7 +37,6 @@ printf 'DMAHEAP_GROUP_ID=%s\n' "$DMAHEAP_GROUP_ID" >> .env
 
 ```shell
 sudo ./install.sh --mode standalone --hardware qualcomm-qnn
-sudo ./install.sh --mode agent --hardware qualcomm-qnn
 ```
 
 The QNN overlay uses privileged mode and broad `/dev` access because the validated QAIRT stack requires it. Run this target only on a dedicated, trusted host with trusted EyePop images. Other QNN-capable devices require platform-specific validation before use.

@@ -15,7 +15,7 @@ Do not publish the runtime API, dashboard, or an unauthenticated relay directly 
 
 ### Secrets
 
-`.env` contains the EyePop API key and account identity. Agent stream definitions can contain camera credentials. Restrict both to the deployment administrators and do not commit them, paste them into support tickets, or bake them into images.
+`.env` contains the EyePop API key and account identity. Restrict it to the deployment administrators, and do not commit it, paste it into support tickets, or bake it into an image.
 
 The installer asks for registry credentials interactively and sends the password to `docker login` through standard input. For automation, inject `EYEPOP_REGISTRY_USERNAME` and `EYEPOP_REGISTRY_PASSWORD` as short-lived process secrets.
 
@@ -26,7 +26,7 @@ The host needs outbound HTTPS for:
 - `registry.eyepop.ai` to pull runtime images;
 - `compute.eyepop.ai` to register the instance, coordinate model access, and deliver usage.
 
-Agent camera sources and configured event destinations must be reachable from the container network. The optional Tailscale step runs only when `TS_AUTHKEY` is present in `.env`; see [Remote access](remote-access.md).
+Media sources the runtime is asked to read must be reachable from the container network. The optional Tailscale step runs only when `TS_AUTHKEY` is present in `.env`; see [Remote access](remote-access.md).
 
 ### Hardware access
 

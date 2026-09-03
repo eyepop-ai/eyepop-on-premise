@@ -5,17 +5,15 @@ icon: server
 
 # On-Premise
 
-EyePop on-premise runs the EyePop inference runtime inside infrastructure you control. Images, video, streams, and inference results remain on that infrastructure by default. Configured Agent outputs can send selected results to webhook, MQTT, or NATS destinations. The runtime makes outbound connections for registration, model access, and usage delivery.
+EyePop on-premise runs the EyePop inference runtime inside infrastructure you control. Images, video, streams, and inference results remain on that infrastructure by default. The runtime makes outbound connections for registration, model access, and usage delivery.
 
 These pages cover the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise), which supports both modes and all five hardware targets. The EyePop CLI can also install and manage a single-Pop instance with `eyepop instance init` — see [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise). Use one or the other on a given host, not both.
 
 ### Start here
 
-- [Modes](concepts/modes.md): choose Standalone or Agent.
 - [Installation](getting-started/installation.md): prepare the host, register the instance, and start it.
 - [First inference](getting-started/first-inference.md): confirm the instance is serving and run a Pop against it.
 - [Runtime configuration](configuration/runtime.md): environment, runtime settings, and local API behavior.
-- [Agent configuration](configuration/agent.md): streams and event outputs for Agent mode.
 
 ### Hardware
 

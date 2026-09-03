@@ -68,5 +68,4 @@ SDK clients in local mode connect to `http://127.0.0.1:8080`, so a tunnel that p
 ### Next steps
 
 - [Security and networking](security-and-networking.md) — secrets, outbound requirements, and hardware access
-- [Agent configuration](../configuration/agent.md) — stream sources and event destinations
 - [Troubleshooting](troubleshooting.md) — sources that do not connect

@@ -32,15 +32,14 @@ The hardware overlays default to the matching `registry.eyepop.ai/ai/runtime-*:l
 
 ### Runtime files
 
-- `instance/standalone.yaml` enables the local runtime API without Agent stream management.
-- `instance/agent.yaml` enables Agent configuration and persistent Agent history.
+- `instance/standalone.yaml` configures the local runtime API.
 - `compose.yaml` owns networking, health checks, persistent volumes, and account environment.
 
 The mounted instance file is where runtime behavior is set. The package ships these keys:
 
 | Key | Shipped value | What it does |
 | --- | --- | --- |
-| `instance-name` | `on-premise-standalone` / `on-premise-agent` | Name the instance reports for itself |
+| `instance-name` | `on-premise-standalone` | Name the instance reports for itself |
 | `http-host` | `0.0.0.0` | Container bind address; Compose is what restricts the host to loopback |
 | `http-port` | `8080` | Container port |
 | `model-cache-dir` | `/opt/eyepop/models` | Model cache, backed by `eyepop_instance_models` |
@@ -53,9 +52,6 @@ The mounted instance file is where runtime behavior is set. The package ships th
 | `routes.swagger.enabled` | `true` | Swagger UI at `/docs` |
 | `routes.dashboard.enabled` | `true` | Dashboard, at `routes.dashboard.path` |
 | `routes.dashboard.path` | `/dashboard` | Dashboard route |
-| `agent.enabled` | `false` / `true` | Agent stream management |
-| `agent.config-dir` | `/opt/eyepop/agent.d` | Agent configuration, bind-mounted from `agents.d` |
-| `agent.store.uri` | `sqlite:///opt/eyepop/private/agent-history.db` | Agent history database |
 
 Two more keys are useful in a deployment and are not set by the package:
 
@@ -84,5 +80,4 @@ The supplied package has no configurable bind address and cannot be exposed dire
 ### Next steps
 
 - [First inference](../getting-started/first-inference.md) — verify the instance and run a Pop against it
-- [Agent configuration](agent.md) — stream definitions and event outputs
 - [Security and networking](../operations/security-and-networking.md) — exposure, secrets, and outbound requirements

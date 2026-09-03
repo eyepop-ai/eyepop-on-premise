@@ -9,21 +9,10 @@ The runtime serves its API on the host loopback interface. Everything on this pa
 
 ### Confirm the instance is serving
 
-{% tabs %}
-{% tab title="Standalone" %}
 ```shell
 curl --fail http://127.0.0.1:8080/health
 curl --fail http://127.0.0.1:8080/ready
 ```
-{% endtab %}
-
-{% tab title="Agent" %}
-```shell
-curl --fail http://127.0.0.1:8080/agent/health
-curl --fail http://127.0.0.1:8080/agent/streams
-```
-{% endtab %}
-{% endtabs %}
 
 `/health` reports that the process is up. `/ready` additionally reports that the pipeline service can accept work — a new instance is healthy before it is ready, because it registers with the account and downloads its first models on the way there.
 
@@ -41,8 +30,6 @@ Replace `8080` everywhere on this page when `EYEPOP_HTTP_PORT` selects another h
 | `/dashboard` | Browser dashboard for the instance |
 
 These have no login in the supplied configuration, which is why the package binds the port to `127.0.0.1`. Anything that reaches the port can read them. See [Security and networking](../operations/security-and-networking.md) before putting an access layer in front.
-
-The [Agent endpoints](../configuration/agent.md#agent-endpoints) are available in Agent mode only.
 
 ### Run inference from an SDK
 
@@ -120,5 +107,5 @@ See [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise) for the CLI-ma
 ### Next steps
 
 - [Runtime configuration](../configuration/runtime.md) — ports, image selection, and the settings the package writes
-- [Agent configuration](../configuration/agent.md) — run streams continuously instead of driving the instance from an application
+- [Remote access](../operations/remote-access.md) — reach the instance from another machine
 - [Troubleshooting](../operations/troubleshooting.md) — when health, readiness, or the first inference does not come up

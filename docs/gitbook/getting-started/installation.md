@@ -32,35 +32,24 @@ EYEPOP_ACCOUNT_UUID=YOUR_ACCOUNT_UUID
 
 Treat `.env` as a secret. It is ignored by Git.
 
-### 2. Configure Agent streams
+### 2. Install and start
 
-Skip this step for Standalone mode. For Agent mode, copy the example and replace its RTSP URL:
-
-```shell
-cp agents.d/streams/camera_1.example.yaml agents.d/streams/camera_1.yaml
-```
-
-See [Agent configuration](../configuration/agent.md) before enabling event outputs.
-
-### 3. Install and start
-
-Pass one mode and one hardware identifier:
+Pass the hardware identifier for this host:
 
 ```shell
 sudo ./install.sh --mode standalone --hardware cpu
-sudo ./install.sh --mode agent --hardware nvidia-cuda
 ```
 
 Valid hardware identifiers are `cpu`, `nvidia-cuda`, `nvidia-jetson`, `intel-openvino`, and `qualcomm-qnn`.
 
 The installer:
 
-1. validates the selected mode and host integration;
+1. validates the host integration for the selected hardware;
 2. installs Docker when necessary;
 3. prompts for the registry credentials supplied by the EyePop dashboard;
 4. pulls the hardware-specific runtime image (`latest` for standard targets and `latest-jetpack6` for NVIDIA Jetson);
 5. creates the persistent volumes and starts the runtime;
-6. waits for the selected mode's health endpoint.
+6. waits for the runtime to report healthy.
 
 For unattended installation, run the installer in an existing root automation context and inject registry credentials through its secret manager:
 
@@ -76,25 +65,11 @@ Docker stores registry authentication in its configured credential store. After 
 
 Use `--no-start` to prepare the host and pull images without starting the runtime.
 
-### 4. Verify
-
-Standalone:
+### 3. Verify
 
 ```shell
 curl --fail http://127.0.0.1:8080/health
 curl --fail http://127.0.0.1:8080/ready
-```
-
-Agent:
-
-```shell
-curl --fail http://127.0.0.1:8080/agent/health
-curl --fail http://127.0.0.1:8080/agent/streams
-```
-
-For either mode:
-
-```shell
 docker compose logs -f eyepop-instance
 ```
 
@@ -106,7 +81,7 @@ Continue with [First inference](first-inference.md) to run a Pop against the ins
 
 ### Compose command shape
 
-The installer combines the shared file with one mode overlay and one hardware overlay. Use the same three files for later Compose operations:
+The installer combines the shared file with the mode overlay and one hardware overlay. Use the same three files for later Compose operations:
 
 ```shell
 docker compose --env-file .env \
@@ -116,4 +91,4 @@ docker compose --env-file .env \
   ps
 ```
 
-Replace the two overlay paths with the deployed mode and hardware. Run commands from the repository root so bind-mount paths resolve correctly.
+Replace the hardware overlay with the deployed selection. Run commands from the repository root so bind-mount paths resolve correctly.
