@@ -11,26 +11,17 @@ icon: bolt
 eyepop instance init --pop eyepop.person:latest
 ```
 
-One command does the whole thing: checks prerequisites, registers the instance with your account, installs a registry credential, detects the hardware profile, pulls the runtime image — several gigabytes — and starts the container. When it finishes, the machine is on-premise and ready.
+One command does the whole thing: checks prerequisites, registers the instance with your account, installs a registry credential, detects the hardware profile, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
 
 Everything the instance needs lives under `~/.eyepop`. The runtime serves `http://127.0.0.1:8080`.
 
-Confirm it is up:
-
-```bash
-curl --fail http://127.0.0.1:8080/health
-curl --fail http://127.0.0.1:8080/ready
-```
-
-`/health` means the process is up; `/ready` means it can accept work. A new instance is healthy before it is ready, while it registers and downloads its first model.
-
 ### See what you have
-
-`eyepop system` reports what this machine is — Docker and its daemon, credentials, the accelerator it found and the runtime image that implies, whether an instance is configured, and exactly what gets sent to EyePop when one is registered. It only reports, and always exits 0.
 
 ```bash
 eyepop system
 ```
+
+This is the one command to check on an instance. It says whether one is configured, where its root is, and whether its container is running — and around that, what the machine is: Docker and its daemon, your credentials, the accelerator it found and the runtime image that implies, and exactly what gets sent to EyePop when an instance is registered. It only reports, and always exits 0.
 
 `eyepop get instances` lists every on-premise instance on the account, not just this machine's:
 
