@@ -1,12 +1,18 @@
 # EyePop On-Premise
 
-This repository is the Docker Compose package for running EyePop on-premise, and the source of truth for its documentation.
+The Docker Compose package for running the EyePop inference runtime on your own hardware.
 
-**📖 Read the docs: [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise)**
+**📖 Quickstart: [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise)**
 
-The pages under [`docs/gitbook`](docs/gitbook) are published there — edit them here and the site follows.
+Most machines do not need this package. The CLI installs and manages an instance in one command:
 
-## Choose hardware
+```shell
+eyepop instance init --pop eyepop.person:latest
+```
+
+Use the package here when you need a hardware target the CLI does not provision yet — discrete NVIDIA GPUs or Intel OpenVINO — or when you want to own the Compose project yourself.
+
+## Hardware
 
 | Hardware | Architecture |
 | --- | --- |
@@ -16,7 +22,7 @@ The pages under [`docs/gitbook`](docs/gitbook) are published there — edit them
 | Intel OpenVINO | amd64 |
 | Qualcomm QNN | arm64 |
 
-Most hardware selections use the `latest` tag from `registry.eyepop.ai`; NVIDIA Jetson uses `latest-jetpack6`. Hardware prerequisites and device access differ, so use the matching [hardware guide](docs/gitbook/README.md#hardware).
+Most targets use the `latest` tag from `registry.eyepop.ai`; NVIDIA Jetson uses `latest-jetpack6`. Prerequisites and device access differ per target — see the [hardware guides](docs/reference/README.md#hardware).
 
 ## Install
 
@@ -34,7 +40,15 @@ sudo ./install.sh --mode standalone --hardware cpu
 
 The installer prompts for the EyePop registry credentials and passes the password to Docker through standard input. The runtime API is available only on `127.0.0.1:8080` by default.
 
-Continue with [First inference](docs/gitbook/getting-started/first-inference.md) to run a Pop against the instance, or browse the [documentation index](docs/gitbook/README.md).
+Full instructions are in [`docs/reference`](docs/reference/README.md).
+
+## Documentation
+
+| Directory | Published | Contents |
+| --- | --- | --- |
+| [`docs/gitbook`](docs/gitbook) | Yes, to [docs.eyepop.ai/on-premise](https://docs.eyepop.ai/on-premise) | The quickstart: create an instance, change its Pop, run inference |
+| [`docs/reference`](docs/reference/README.md) | No | This package in full: manual install, configuration keys, hardware, operations |
+| [`docs/agent`](docs/agent/README.md) | No | Agent mode, held back until it is announced |
 
 ## Validate this repository
 

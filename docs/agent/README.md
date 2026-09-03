@@ -13,7 +13,7 @@ are unchanged, and `scripts/validate.sh` still renders both modes. Only the
 customer-facing pages are held back.
 
 Move these pages into `docs/gitbook` when Agent mode is ready to announce.
-Their links point into `../gitbook/`, which has to be rewritten on the way
+Their links point into `../reference/`, which has to be rewritten on the way
 back in. The published pages will also need Agent restored where it was
 removed: the mode selection in installation, the Agent health checks, the
 `--mode agent` examples on each hardware page, the Agent rows in the runtime

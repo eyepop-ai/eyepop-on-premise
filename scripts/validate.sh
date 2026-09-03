@@ -5,22 +5,30 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MODES=(standalone agent)
 HARDWARE=(cpu nvidia-cuda nvidia-jetson intel-openvino qualcomm-qnn)
+# Published to docs.eyepop.ai/on-premise.
+PUBLISHED_DOCS=(
+  docs/gitbook/README.md
+  docs/gitbook/quickstart.md
+)
+
+# Kept in the repository, not published.
 REQUIRED_DOCS=(
   README.md
-  docs/gitbook/README.md
-  docs/gitbook/getting-started/installation.md
-  docs/gitbook/getting-started/first-inference.md
-  docs/gitbook/configuration/runtime.md
-  docs/gitbook/hardware/cpu.md
-  docs/gitbook/hardware/nvidia-cuda.md
-  docs/gitbook/hardware/nvidia-jetson.md
-  docs/gitbook/hardware/intel-openvino.md
-  docs/gitbook/hardware/qualcomm-qnn.md
-  docs/gitbook/operations/remote-access.md
-  docs/gitbook/operations/security-and-networking.md
-  docs/gitbook/operations/storage-and-upgrades.md
-  docs/gitbook/operations/billing-and-connectivity.md
-  docs/gitbook/operations/troubleshooting.md
+  "${PUBLISHED_DOCS[@]}"
+  docs/reference/README.md
+  docs/reference/getting-started/installation.md
+  docs/reference/getting-started/first-inference.md
+  docs/reference/configuration/runtime.md
+  docs/reference/hardware/cpu.md
+  docs/reference/hardware/nvidia-cuda.md
+  docs/reference/hardware/nvidia-jetson.md
+  docs/reference/hardware/intel-openvino.md
+  docs/reference/hardware/qualcomm-qnn.md
+  docs/reference/operations/remote-access.md
+  docs/reference/operations/security-and-networking.md
+  docs/reference/operations/storage-and-upgrades.md
+  docs/reference/operations/billing-and-connectivity.md
+  docs/reference/operations/troubleshooting.md
 )
 
 fail() {

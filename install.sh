@@ -8,7 +8,7 @@ START=1
 
 usage() {
   cat <<'EOF'
-Usage: sudo ./install.sh --mode <standalone|agent> --hardware <hardware> [--no-start]
+Usage: sudo ./install.sh --mode standalone --hardware <hardware> [--no-start]
 
 Hardware:
   cpu
@@ -197,7 +197,6 @@ for _ in $(seq 1 36); do
   if curl --connect-timeout 2 --max-time 5 -fsS \
     "http://127.0.0.1:${HTTP_PORT}${HEALTH_PATH}" >/dev/null 2>&1; then
     log "$MODE runtime healthy."
-    log "dashboard: http://127.0.0.1:${HTTP_PORT}/dashboard/"
     exit 0
   fi
   sleep 5

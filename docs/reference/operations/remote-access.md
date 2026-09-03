@@ -53,7 +53,7 @@ Tailscale is optional. Nothing else in the package depends on it, and the instal
 
 ### Reaching the instance from another machine
 
-Compose publishes the API on `127.0.0.1` only, and the package has no configurable bind address. The routes it serves — the dashboard, Swagger, `/metrics`, and the inference API — have no login in the shipped configuration, so treat anything that reaches the port as trusted.
+Compose publishes the API on `127.0.0.1` only, and the package has no configurable bind address. The routes it serves — Swagger, `/metrics`, and the inference API — have no login in the shipped configuration, so treat anything that reaches the port as trusted.
 
 To use the instance from another machine, put an access layer in front of the loopback endpoint:
 

@@ -46,12 +46,10 @@ The mounted instance file is where runtime behavior is set. The package ships th
 | `private-config-dir` | `/opt/eyepop/private` | Private state and the usage spool, backed by `eyepop_instance_private` |
 | `pipeline-exec` | `/usr/bin/eyepop-pipeline` | Pipeline executable in the image |
 | `pipeline-platform-mode` | `default` | Pipeline platform selection |
-| `public-file-dir` | `/usr/share/eyepop-ai/public` | Static files, including the dashboard |
+| `public-file-dir` | `/usr/share/eyepop-ai/public` | Static files served by the runtime |
 | `pipeline-log-passthrough` | `true` | Send pipeline logs to the container log |
 | `routes.debug.enabled` | `false` | Debug and pipeline-introspection routes |
 | `routes.swagger.enabled` | `true` | Swagger UI at `/docs` |
-| `routes.dashboard.enabled` | `true` | Dashboard, at `routes.dashboard.path` |
-| `routes.dashboard.path` | `/dashboard` | Dashboard route |
 
 Two more keys are useful in a deployment and are not set by the package:
 
@@ -71,7 +69,6 @@ Compose publishes the API as `127.0.0.1:8080` by default. Set `EYEPOP_HTTP_PORT`
 | `/version` | Instance version and build |
 | `/metrics` | Prometheus metrics |
 | `/docs` | Swagger UI |
-| `/dashboard` | Browser dashboard |
 
 None of these require a login in the shipped configuration, and `/metrics` exposes operational detail about the instance. That is why the package binds the published port to the loopback interface.
 

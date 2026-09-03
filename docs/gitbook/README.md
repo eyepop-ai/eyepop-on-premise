@@ -1,32 +1,37 @@
 ---
-description: Run the EyePop inference runtime on infrastructure you control
+description: Run the EyePop inference runtime on your own hardware
 icon: server
 ---
 
 # On-Premise
 
-EyePop on-premise runs the EyePop inference runtime inside infrastructure you control. Images, video, streams, and inference results remain on that infrastructure by default. The runtime makes outbound connections for registration, model access, and usage delivery.
+An on-premise **instance** is the EyePop runtime installed on one machine, serving one Pop. Media and inference results stay on that machine. The runtime reaches out to EyePop only to register, pull models, and report usage.
 
-These pages cover the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise), which supports both modes and all five hardware targets. The EyePop CLI can also install and manage a single-Pop instance with `eyepop instance init` — see [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise). Use one or the other on a given host, not both.
+The CLI installs and manages an instance for you:
 
-### Start here
+```bash
+eyepop instance init --pop eyepop.person:latest
+```
 
-- [Installation](getting-started/installation.md): prepare the host, register the instance, and start it.
-- [First inference](getting-started/first-inference.md): confirm the instance is serving and run a Pop against it.
-- [Runtime configuration](configuration/runtime.md): environment, runtime settings, and local API behavior.
+Once a machine has an instance, `eyepop run` goes to it and no EyePop compute is started.
 
-### Hardware
+### What you need
 
-- [CPU](hardware/cpu.md)
-- [NVIDIA CUDA](hardware/nvidia-cuda.md)
-- [NVIDIA Jetson](hardware/nvidia-jetson.md)
-- [Intel OpenVINO](hardware/intel-openvino.md)
-- [Qualcomm QNN](hardware/qualcomm-qnn.md)
+* A Linux host with Docker and Compose v2
+* An API key from [the dashboard](https://dashboard.eyepop.ai), and a signed-in CLI (`eyepop auth login`)
+* Outbound HTTPS to `registry.eyepop.ai` and `compute.eyepop.ai`
 
-### Operations
+### Supported hardware
 
-- [Remote access](operations/remote-access.md)
-- [Security and networking](operations/security-and-networking.md)
-- [Storage and upgrades](operations/storage-and-upgrades.md)
-- [Billing and connectivity](operations/billing-and-connectivity.md)
-- [Troubleshooting](operations/troubleshooting.md)
+| Hardware | Profile |
+| --- | --- |
+| Any machine, no accelerator | `cpu` |
+| NVIDIA Jetson on JetPack 6 | `cuda-jetpack6` |
+| Qualcomm Dragonwing, QAIRT SDK on the host | `qnn` |
+
+`eyepop instance init` detects the profile. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet.
+
+### Next steps
+
+* [Quickstart](quickstart.md) — create an instance, change its Pop, and run inference against it
+* [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise) — every `instance` command, hardware profiles, and repair
