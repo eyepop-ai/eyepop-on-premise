@@ -1,8 +1,13 @@
+---
+description: Choose between Standalone and Agent mode
+icon: shuffle
+---
+
 # Modes
 
 The mode controls who creates and maintains inference workloads. It does not change the supported hardware, account registration, image delivery, persistent storage, or usage reporting.
 
-## Standalone
+### Standalone
 
 Standalone mode exposes the runtime HTTP API on the local host. An application or EyePop SDK creates pipelines, submits media, reads results, and controls the workload lifecycle.
 
@@ -14,7 +19,7 @@ Choose Standalone when:
 
 Standalone uses `instance/standalone.yaml` and the `deployments/modes/standalone.yaml` overlay.
 
-## Agent (Beta)
+### Agent (Beta)
 
 Agent mode runs persistent stream definitions from `agents.d/streams` and sends selected results through outputs in `agents.d/events-config.yaml`. The runtime stores Agent history in the persistent private-state volume.
 
@@ -26,7 +31,7 @@ Choose Agent when:
 
 Agent is Beta on CPU, NVIDIA CUDA, NVIDIA Jetson, Intel OpenVINO, and Qualcomm QNN. Agent uses `instance/agent.yaml` and the `deployments/modes/agent.yaml` overlay.
 
-## What the modes share
+### What the modes share
 
 Both modes:
 

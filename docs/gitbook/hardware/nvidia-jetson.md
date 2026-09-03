@@ -1,3 +1,8 @@
+---
+description: Jetson Orin AGX and NX devices on arm64
+icon: microchip
+---
+
 # NVIDIA Jetson
 
 Use this target for Jetson Orin AGX and NX devices. The arm64 image includes the Tegra CUDA libraries expected by the Jetson platform.
@@ -6,7 +11,7 @@ Use this target for Jetson Orin AGX and NX devices. The arm64 image includes the
 - Hardware identifier: `nvidia-jetson`
 - Container access: the host NVIDIA runtime with compute and utility driver capabilities
 
-## Host requirements
+### Host requirements
 
 - Jetson Orin AGX or NX
 - JetPack 6.2.1 with Jetson Linux (L4T) 36.4.4; `registry.eyepop.ai/ai/runtime-cuda:latest-jetpack6` is validated on this release pair

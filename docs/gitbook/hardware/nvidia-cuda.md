@@ -1,3 +1,8 @@
+---
+description: Discrete and data-center NVIDIA GPUs on amd64 Linux
+icon: microchip
+---
+
 # NVIDIA CUDA
 
 Use this target for discrete and data-center NVIDIA GPUs on amd64 Linux. NVIDIA Jetson uses a different image and host runtime.
@@ -6,7 +11,7 @@ Use this target for discrete and data-center NVIDIA GPUs on amd64 Linux. NVIDIA 
 - Hardware identifier: `nvidia-cuda`
 - Container access: one NVIDIA GPU through the Compose device reservation
 
-## Host requirements
+### Host requirements
 
 - A CUDA-compatible NVIDIA GPU
 - A working NVIDIA driver (`nvidia-smi` succeeds)

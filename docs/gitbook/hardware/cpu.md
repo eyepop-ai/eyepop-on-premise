@@ -1,3 +1,8 @@
+---
+description: Run inference on amd64 or arm64 hosts with no accelerator
+icon: microchip
+---
+
 # CPU
 
 Use the CPU target on an amd64 or arm64 Linux host when no accelerator is required.

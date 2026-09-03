@@ -1,8 +1,13 @@
+---
+description: How on-premise inference is metered and reported
+icon: receipt
+---
+
 # Billing and connectivity
 
 On-premise inference is metered through durable usage events. Media and inference results stay on the local host by default; configured Agent outputs can send selected results to webhook, MQTT, or NATS destinations. The runtime sends usage metadata to EyePop.
 
-## End-to-end flow
+### End-to-end flow
 
 1. The runtime measures active session replicas and emits `session_replica_uptime_seconds` usage events.
 2. Before transmission, it writes the exact event batch to a local SQLite spool under `/opt/eyepop/private`.
@@ -13,14 +18,14 @@ On-premise inference is metered through durable usage events. Media and inferenc
 
 Network failures and non-success responses leave the batch in the local spool for retry. Replayed events use stable identities, so duplicates are handled idempotently by the billing ledger.
 
-## Operational implications
+### Operational implications
 
 - Keep the `eyepop_instance_private` volume across restarts and upgrades. Deleting it can remove usage awaiting delivery.
 - Allow outbound HTTPS to `compute.eyepop.ai` even when all media sources and inference clients are local.
 - A temporary Compute or Billing outage should increase queued usage rather than stop inference immediately; restore connectivity so the queue can drain.
 - Webhook, MQTT, and NATS outputs in Agent mode are application event delivery. They do not replace or control EyePop usage delivery.
 
-## Troubleshooting delivery
+### Troubleshooting delivery
 
 Inspect runtime logs for registration or usage-delivery errors:
 
