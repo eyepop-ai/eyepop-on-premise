@@ -174,6 +174,6 @@ Agent history is stored at `/opt/eyepop/private/agent-history.db` in the `eyepop
 
 ### Next steps
 
-- [First inference](../gitbook/getting-started/first-inference.md) — check the instance is serving before adding streams
-- [Remote access](../gitbook/operations/remote-access.md) — reach cameras that are not on the instance's network
-- [Troubleshooting](../gitbook/operations/troubleshooting.md) — configuration errors and streams that do not start
+- [First inference](../reference/getting-started/first-inference.md) — check the instance is serving before adding streams
+- [Remote access](../reference/operations/remote-access.md) — reach cameras that are not on the instance's network
+- [Troubleshooting](../reference/operations/troubleshooting.md) — configuration errors and streams that do not start

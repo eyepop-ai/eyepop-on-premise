@@ -27,7 +27,6 @@ Replace `8080` everywhere on this page when `EYEPOP_HTTP_PORT` selects another h
 | `/version` | Instance version and build |
 | `/metrics` | Prometheus metrics |
 | `/docs` | Swagger UI for the instance API |
-| `/dashboard` | Browser dashboard for the instance |
 
 These have no login in the supplied configuration, which is why the package binds the port to `127.0.0.1`. Anything that reaches the port can read them. See [Security and networking](../operations/security-and-networking.md) before putting an access layer in front.
 
@@ -96,7 +95,7 @@ The first request for a given ability is slower while the model downloads into t
 
 ### Run inference from the CLI
 
-The EyePop CLI installs and manages instances of its own with `eyepop instance init`. It treats a machine as on-premise only when it finds the instance root it wrote itself, so it does not see a deployment installed by this package: `eyepop run` on this host still goes to the cloud. Drive a Compose-installed instance from the SDKs, the instance API, or the dashboard.
+The EyePop CLI installs and manages instances of its own with `eyepop instance init`. It treats a machine as on-premise only when it finds the instance root it wrote itself, so it does not see a deployment installed by this package: `eyepop run` on this host still goes to the cloud. Drive a Compose-installed instance from the SDKs or the instance API.
 
 {% hint style="warning" %}
 Do not run both on one host. The CLI uses the same Docker Compose project name as this package, `eyepop-on-premise`, so `eyepop instance init` would take over the containers and volumes this package created.

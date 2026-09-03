@@ -9,7 +9,7 @@ icon: shield-halved
 
 The shared Compose file publishes port 8080 on `127.0.0.1`, so another machine cannot connect directly. The supplied package does not provide a configurable bind address.
 
-Do not publish the runtime API, dashboard, or an unauthenticated relay directly to the public internet. The dashboard, Swagger, and `/metrics` are enabled without their own login in the supplied instance configuration, so anything that reaches the port can read them.
+Do not publish the runtime API or an unauthenticated relay directly to the public internet. Swagger and `/metrics` are enabled without their own login in the supplied instance configuration, so anything that reaches the port can read them.
 
 [Remote access](remote-access.md) covers the supported ways to reach the instance from another machine, and to reach cameras that are not on the instance's network.
 
