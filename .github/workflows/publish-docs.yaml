@@ -2,7 +2,7 @@ name: Publish docs
 
 # docs/gitbook is the customer documentation for this repository. The docs site
 # is one GitBook space, so the pages are mirrored into eyepop-docs-external
-# under install/on-premise rather than published as a separate space.
+# under deploying/on-premise rather than published as a separate space.
 
 on:
   push:
