@@ -31,7 +31,7 @@ Pick one path per host — the two collide in both directions. The CLI does not 
 eyepop instance init --pop eyepop.person:latest
 ```
 
-One command does the whole thing: checks prerequisites, registers the instance with your account, installs a registry credential, detects the hardware profile, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
+One command does the whole thing: detects the hardware profile, checks prerequisites, installs a registry credential if docker does not already hold one, registers the instance with your account, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
 
 Everything the instance needs lives under `~/.eyepop`, unless you name another root with `--config-dir` or `EYEPOP_INSTANCE_DIR`. The runtime serves `http://127.0.0.1:8080`.
 
