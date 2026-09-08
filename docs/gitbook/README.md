@@ -19,9 +19,9 @@ An on-premise **instance** is the EyePop runtime installed on one machine, servi
 | --- | --- |
 | Any machine, no accelerator | `cpu` |
 | NVIDIA Jetson on JetPack 6 | `cuda-jetpack6` |
-| Qualcomm Dragonwing, QAIRT SDK on the host | `qnn` |
+| Qualcomm Dragonwing QCS9075, QAIRT SDK on the host | `qnn` |
 
-`eyepop instance init` detects the profile. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet.
+`eyepop instance init` detects the profile. QCS9075 is the only Qualcomm part it resolves a QNN runtime for; on any other Qualcomm host `init` detects the accelerator and then fails, unless you supply a complete `qnn:` block in `--config`. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet.
 
 ### Create an instance
 
@@ -134,7 +134,7 @@ try {
 
 **Local mode** is what points an SDK at `http://127.0.0.1:8080` instead of the cloud, and it needs no account credentials. `EYEPOP_LOCAL_MODE=true` in the environment selects it without the constructor argument. Node still sends an `EYEPOP_API_KEY` if one is set in the environment — unset it to connect anonymously. Node local mode always uses port `8080`; Python takes an `eyepop_url` for anything else.
 
-Connecting creates a pipeline on the instance and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
+The SDK creates a pipeline on the instance — at connect in Node, on the first request in Python — and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
 
 The first request for an ability is slower while the model downloads. After that it is served from the instance's cache.
 
