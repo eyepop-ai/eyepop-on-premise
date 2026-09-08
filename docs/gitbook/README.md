@@ -10,8 +10,8 @@ An on-premise **instance** is the EyePop runtime installed on one machine, servi
 ### What you need
 
 * A Linux host with Docker and Compose v2
-* An API key from [the dashboard](https://dashboard.eyepop.ai), and a signed-in CLI (`eyepop auth login`)
-* Outbound HTTPS to `registry.eyepop.ai` and `compute.eyepop.ai`
+* An API key from [the dashboard](https://dashboard.eyepop.ai) — pass it as `EYEPOP_API_KEY` or `--api-key`, or sign in with `eyepop auth login`
+* Outbound HTTPS from the host to `registry.eyepop.ai` to pull the runtime image, and from the CLI to `compute.eyepop.ai` and `web-api.eyepop.ai` — plus `auth0.eyepop.ai` if you sign in with `eyepop auth login` rather than using an API key. The runtime container reaches `compute.eyepop.ai`, `dataset-api.eyepop.ai`, and the object-storage URLs the dataset API returns for model downloads
 
 ### Supported hardware
 
@@ -19,9 +19,11 @@ An on-premise **instance** is the EyePop runtime installed on one machine, servi
 | --- | --- |
 | Any machine, no accelerator | `cpu` |
 | NVIDIA Jetson on JetPack 6 | `cuda-jetpack6` |
-| Qualcomm Dragonwing, QAIRT SDK on the host | `qnn` |
+| Qualcomm Dragonwing QCS9075, QAIRT SDK on the host | `qnn` |
 
-`eyepop instance init` detects the profile. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet.
+`eyepop instance init` detects the profile. QCS9075 is the only Qualcomm part it resolves a QNN runtime for; on any other Qualcomm host `init` detects the accelerator and then fails, unless you supply a complete `qnn:` block in `--config`. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet. On such a host it detects the accelerator and refuses rather than falling back; pass `--profile cpu` to run without it.
+
+Pick one path per host — the two collide in both directions. The CLI does not recognize an instance the Compose package installed, so `eyepop run` on that machine still goes to the cloud; and because both use the Compose project name `eyepop-on-premise` with the same service and volume names, either installer recreates the other's containers over its volumes.
 
 ### Create an instance
 
@@ -29,9 +31,9 @@ An on-premise **instance** is the EyePop runtime installed on one machine, servi
 eyepop instance init --pop eyepop.person:latest
 ```
 
-One command does the whole thing: checks prerequisites, registers the instance with your account, installs a registry credential, detects the hardware profile, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
+One command does the whole thing: detects the hardware profile, checks prerequisites, installs a registry credential if docker does not already hold one, registers the instance with your account, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
 
-Everything the instance needs lives under `~/.eyepop`. The runtime serves `http://127.0.0.1:8080`.
+The generated compose project and instance configuration live under `~/.eyepop`, unless you name another root with `--config-dir` or `EYEPOP_INSTANCE_DIR`. The runtime's own state — its config copy, private data, and the model cache — lives in Docker named volumes, so backing up `~/.eyepop` does not capture the cache. The runtime serves `http://127.0.0.1:8080`.
 
 ### Confirm it's up
 
@@ -134,7 +136,7 @@ try {
 
 **Local mode** is what points an SDK at `http://127.0.0.1:8080` instead of the cloud, and it needs no account credentials. `EYEPOP_LOCAL_MODE=true` in the environment selects it without the constructor argument. Node still sends an `EYEPOP_API_KEY` if one is set in the environment — unset it to connect anonymously. Node local mode always uses port `8080`; Python takes an `eyepop_url` for anything else.
 
-Connecting creates a pipeline on the instance and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
+The SDK creates a pipeline on the instance (at connect in Node, on the first request in Python) and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
 
 The first request for an ability is slower while the model downloads. After that it is served from the instance's cache.
 
