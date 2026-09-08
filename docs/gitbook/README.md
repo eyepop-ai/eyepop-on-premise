@@ -136,7 +136,7 @@ try {
 
 **Local mode** is what points an SDK at `http://127.0.0.1:8080` instead of the cloud, and it needs no account credentials. `EYEPOP_LOCAL_MODE=true` in the environment selects it without the constructor argument. Node still sends an `EYEPOP_API_KEY` if one is set in the environment — unset it to connect anonymously. Node local mode always uses port `8080`; Python takes an `eyepop_url` for anything else.
 
-The SDK creates a pipeline on the instance — at connect in Node, on the first request in Python — and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
+The SDK creates a pipeline on the instance (at connect in Node, on the first request in Python) and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
 
 The first request for an ability is slower while the model downloads. After that it is served from the instance's cache.
 
