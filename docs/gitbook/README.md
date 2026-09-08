@@ -21,7 +21,7 @@ An on-premise **instance** is the EyePop runtime installed on one machine, servi
 | NVIDIA Jetson on JetPack 6 | `cuda-jetpack6` |
 | Qualcomm Dragonwing QCS9075, QAIRT SDK on the host | `qnn` |
 
-`eyepop instance init` detects the profile. QCS9075 is the only Qualcomm part it resolves a QNN runtime for; on any other Qualcomm host `init` detects the accelerator and then fails, unless you supply a complete `qnn:` block in `--config`. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet.
+`eyepop instance init` detects the profile. QCS9075 is the only Qualcomm part it resolves a QNN runtime for; on any other Qualcomm host `init` detects the accelerator and then fails, unless you supply a complete `qnn:` block in `--config`. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet. On such a host it detects the accelerator and refuses rather than falling back; pass `--profile cpu` to run without it.
 
 Pick one path per host — the two collide in both directions. The CLI does not recognize an instance the Compose package installed, so `eyepop run` on that machine still goes to the cloud; and because both use the Compose project name `eyepop-on-premise` with the same service and volume names, either installer recreates the other's containers over its volumes.
 
@@ -33,7 +33,7 @@ eyepop instance init --pop eyepop.person:latest
 
 One command does the whole thing: detects the hardware profile, checks prerequisites, installs a registry credential if docker does not already hold one, registers the instance with your account, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
 
-Everything the instance needs lives under `~/.eyepop`, unless you name another root with `--config-dir` or `EYEPOP_INSTANCE_DIR`. The runtime serves `http://127.0.0.1:8080`.
+The generated compose project and instance configuration live under `~/.eyepop`, unless you name another root with `--config-dir` or `EYEPOP_INSTANCE_DIR`. The runtime's own state — its config copy, private data, and the model cache — lives in Docker named volumes, so backing up `~/.eyepop` does not capture the cache. The runtime serves `http://127.0.0.1:8080`.
 
 ### Confirm it's up
 
