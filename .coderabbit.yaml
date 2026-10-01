@@ -1,9 +1,12 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-
+# Repository layer on top of the organization settings. Values set here win; everything else comes
+# from the organization. Reviews run only on request: add the `needs-review` label, or comment
+# `@coderabbitai review`.
 inheritance: true
 language: en
 chat:
-  auto_reply: true
+  # Reply only when mentioned, so threads don't trigger CodeRabbit on their own.
+  auto_reply: false
   art: false
 reviews:
   auto_review:
@@ -11,8 +14,8 @@ reviews:
     drafts: false
     base_branches:
       - main
-    auto_incremental_review: true
-    auto_pause_after_reviewed_commits: 1
+    # One review per request. Later pushes are not re-reviewed until someone asks again.
+    auto_incremental_review: false
     labels:
       - needs-review
       - '!skip-review'
@@ -26,7 +29,8 @@ reviews:
       - github-actions[bot]
   high_level_summary: true
   poem: false
-  review_status: true
+  # No "Review skipped" comment on every unlabeled PR.
+  review_status: false
   profile: chill
   request_changes_workflow: false
   review_details: true
