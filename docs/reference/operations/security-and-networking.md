@@ -24,7 +24,8 @@ The installer asks for registry credentials interactively and sends the password
 The host needs outbound HTTPS for:
 
 - `registry.eyepop.ai` to pull runtime images;
-- `compute.eyepop.ai` to register the instance, coordinate model access, and deliver usage.
+- `compute.eyepop.ai` to register the instance, coordinate model access, and deliver usage;
+- `dataset-api.eyepop.ai` to resolve models, and the object-storage URLs it returns to download them.
 
 Media sources the runtime is asked to read must be reachable from the container network. The optional Tailscale step runs only when `TS_AUTHKEY` is present in `.env`; see [Remote access](remote-access.md).
 

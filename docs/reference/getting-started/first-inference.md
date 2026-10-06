@@ -87,9 +87,9 @@ Node local mode always uses `http://127.0.0.1:8080`. Leave `EYEPOP_HTTP_PORT` at
 {% endtab %}
 {% endtabs %}
 
-`EYEPOP_LOCAL_MODE=true` in the client environment selects local mode without the constructor argument. Local mode sends no account credentials — the instance is already registered to the account, and the client is trusted because it can reach the loopback port.
+`EYEPOP_LOCAL_MODE=true` in the client environment selects local mode without the constructor argument. Local mode needs no account credentials — the instance is already registered to the account, and the client is trusted because it can reach the loopback port. Node still sends `EYEPOP_API_KEY` if it is set in the client environment; unset it to connect without one.
 
-Connecting creates a pipeline on the instance, and disconnecting removes it. Use the context manager or a `finally` block, as both examples above do, so a client that exits does not leave a pipeline behind. Reuse one connected endpoint for many requests rather than connecting per request.
+The SDK creates a pipeline on the instance — at connect in Node, on the first request in Python — and disconnecting removes it. Use the context manager or a `finally` block, as both examples above do, so a client that exits does not leave a pipeline behind. Reuse one connected endpoint for many requests rather than connecting per request.
 
 The first request for a given ability is slower while the model downloads into the `eyepop_instance_models` volume. Later requests for the same ability use the cache.
 
