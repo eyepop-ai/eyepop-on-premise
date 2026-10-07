@@ -11,6 +11,7 @@ Agent mode is Beta. It loads stream definitions from `agents.d/streams` and opti
 agents.d/
 ├── events-config.yaml          delivery outputs
 ├── event_sinks/                additional output files, merged in name order
+├── processors/                 optional processors (`journey_finder`, `vlm_insights`), one file each
 └── streams/
     ├── camera_1.example.yaml   shipped example, never loaded
     └── loading-dock.yaml       one file per stream
@@ -62,7 +63,7 @@ These source options apply to the whole stream, and each can be overridden per j
 | `motion_gap` | Frames of quiet before motion is considered ended |
 | `motion_grid_x`, `motion_grid_y` | Motion detection grid size |
 
-Media caching is what makes `/agent/media/thumbnail`, `/agent/media/clip`, and `/agent/media/latest-frame` available; without `media_cache_seconds` those routes are not served.
+Media caching is what makes `/agent/media/thumbnail`, `/agent/media/clip`, and `/agent/media/latest-frame` available. It needs a media cache service, which the runtime reaches through `media-cache.url` (`EYEPOP_MEDIA_CACHE_URL`). Without one, the runtime refuses to start with a stream that sets `media_cache_seconds`, and the media routes answer `503`.
 
 #### Jobs
 
@@ -106,6 +107,8 @@ jobs:
 ```
 
 Keep camera credentials out of Git. `.gitignore` excludes every stream file except the examples, and `scripts/validate.sh` fails if a non-example stream file is ever tracked. Restrict filesystem access to stream files that contain authenticated URLs.
+
+Alternatively, keep credentials out of the files: before each `.yaml` under `agents.d` is parsed, every `${NAME}` placeholder in it is replaced from the runtime container's environment. Put the whole URL in one quoted variable, for example `uri: "${LOADING_DOCK_URL}"`. A variable that is not set fails that file, `$${` writes a literal `${`, and the runtime's own credentials (`EYEPOP_API_KEY`, `EYEPOP_SECRET_KEY`, `EYEPOP_SERVICE_KEY`, `EYEPOP_USER_JWT`) cannot be referenced.
 
 ### Event outputs
 
@@ -154,9 +157,9 @@ Event delivery is separate from EyePop account usage delivery. Disabling webhook
 | `/agent/streams` | Streams are configured |
 | `/agent/tracks` | Streams are configured |
 | `/agent/detections` | Streams are configured |
-| `/agent/media/thumbnail` | The stream sets `media_cache_seconds` |
-| `/agent/media/clip` | The stream sets `media_cache_seconds` |
-| `/agent/media/latest-frame` | The stream sets `media_cache_seconds` |
+| `/agent/media/thumbnail` | A media cache is configured and the stream sets `media_cache_seconds` |
+| `/agent/media/clip` | A media cache is configured and the stream sets `media_cache_seconds` |
+| `/agent/media/latest-frame` | A media cache is configured and the stream sets `media_cache_seconds` |
 
 ```shell
 curl --fail http://127.0.0.1:8080/agent/health
@@ -170,7 +173,7 @@ The runtime also serves `/agent/config`, which reads and replaces the configurat
 
 ### Health and state
 
-Agent history is stored at `/opt/eyepop/private/agent-history.db` in the `eyepop_instance_private` volume. Recreating the container preserves it; deleting the private volume removes it.
+Agent history is stored in a Postgres database that `agent.store.uri` points at (`postgres://` or `postgresql://`). With Agent enabled, the runtime refuses to start when the uri is missing or is a `sqlite://` uri. History survives the container being recreated. The package does not provide the database yet.
 
 ### Next steps
 

@@ -21,7 +21,7 @@ Standalone uses `instance/standalone.yaml` and the `deployments/modes/standalone
 
 ### Agent (Beta)
 
-Agent mode runs persistent stream definitions from `agents.d/streams` and sends selected results through outputs in `agents.d/events-config.yaml`. The runtime stores Agent history in the persistent private-state volume.
+Agent mode runs persistent stream definitions from `agents.d/streams` and sends selected results through outputs in `agents.d/events-config.yaml`. The runtime stores Agent history in an external Postgres database (`agent.store.uri`). The package does not provide one yet, and its `instance/agent.yaml` still names the removed SQLite store, so Agent mode as packaged does not start on current runtime images.
 
 Choose Agent when:
 
