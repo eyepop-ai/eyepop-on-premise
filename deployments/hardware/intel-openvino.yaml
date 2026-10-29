@@ -8,4 +8,4 @@ services:
     group_add:
       - ${RENDER_GROUP_ID:?set RENDER_GROUP_ID in .env}
     environment:
-      ORT_PROVIDER_OPTION_device_type: ${OPENVINO_DEVICE_TYPE:-AUTO}
+      ORT_PROVIDER_OPTION_device_type: ${OPENVINO_DEVICE_TYPE:-GPU}

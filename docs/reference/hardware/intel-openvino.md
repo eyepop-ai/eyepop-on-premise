@@ -26,7 +26,7 @@ sed -i '/^RENDER_GROUP_ID=/d' .env
 printf 'RENDER_GROUP_ID=%s\n' "$RENDER_GROUP_ID" >> .env
 ```
 
-`OPENVINO_DEVICE_TYPE` defaults to `AUTO`. Set it to `GPU`, `NPU`, or another target supported by the installed Intel runtime when the deployment needs an explicit selection.
+`OPENVINO_DEVICE_TYPE` defaults to `GPU`. Set it to `NPU`, or another target supported by the installed Intel runtime, to run on that device instead. Do not set it to `AUTO`: OpenVINO then accepts none of the model, and ONNX Runtime runs all of it on the CPU while the GPU stays idle.
 
 ```shell
 sudo ./install.sh --mode standalone --hardware intel-openvino

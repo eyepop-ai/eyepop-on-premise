@@ -19,7 +19,7 @@ The shared Compose file passes account registration through environment variable
 | `EYEPOP_HTTP_PORT` | No | Changes the loopback host port from `8080` |
 | `EYEPOP_RUNTIME_IMAGE` | No | Overrides the selected hardware image, normally for a controlled rollback |
 | `RENDER_GROUP_ID` | Intel only | Host `render` group ID, added to the container |
-| `OPENVINO_DEVICE_TYPE` | No | OpenVINO device selection; defaults to `AUTO` |
+| `OPENVINO_DEVICE_TYPE` | No | OpenVINO device selection; defaults to `GPU` |
 | `QAIRT_SDK_ROOT` | Qualcomm only | Host QAIRT SDK directory, bind-mounted read-only at `/opt/qairt` |
 | `FASTRPC_GROUP_ID` | Qualcomm only | Host `fastrpc` group ID |
 | `DMAHEAP_GROUP_ID` | Qualcomm only | Host `dmaheap` group ID |
