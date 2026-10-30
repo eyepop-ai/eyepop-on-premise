@@ -5,143 +5,42 @@ icon: server
 
 # On-Premise
 
-An on-premise **instance** is the EyePop runtime installed on one machine, serving one Pop. Media and inference results stay on that machine. The runtime reaches out to EyePop only to register, pull models, and report usage.
+EyePop runs your pops in one of two places: in EyePop's cloud, or on hardware you control. On-premise, the EyePop runtime runs on one of your own machines, next to your cameras and your data, and inference happens there.
 
-### What you need
+### How it works
 
-* A Linux host with Docker and Compose v2
-* An API key from [the dashboard](https://dashboard.eyepop.ai) — pass it as `EYEPOP_API_KEY` or `--api-key`, or sign in with `eyepop auth login`
-* Outbound HTTPS from the host to `registry.eyepop.ai` to pull the runtime image, and from the CLI to `compute.eyepop.ai` and `web-api.eyepop.ai` — plus `auth0.eyepop.ai` if you sign in with `eyepop auth login` rather than using an API key. The runtime container reaches `compute.eyepop.ai`, `dataset-api.eyepop.ai`, and the object-storage URLs the dataset API returns for model downloads
+An on-premise **instance** is the EyePop runtime installed on one machine with Docker. It serves one pop, a single ability or a pipeline of several, and uses the machine's accelerator when it has one: an NVIDIA or Intel GPU, an Intel or Qualcomm NPU, or else the CPU.
 
-### Supported hardware
+You set an instance up and manage it with the [EyePop CLI](https://docs.eyepop.ai/developer-documentation/cli/on-premise), which detects the hardware, starts the runtime, and changes what it serves. Applications on the machine send it images and video at `http://127.0.0.1:8080`, through the CLI, the EyePop SDKs in local mode, or plain HTTP.
 
-| Hardware | Profile |
-| --- | --- |
-| Any machine, no accelerator | `cpu` |
-| NVIDIA Jetson on JetPack 6 | `cuda-jetpack6` |
-| Qualcomm Dragonwing QCS9075, QAIRT SDK on the host | `qnn` |
+The instance still connects to EyePop, over outbound HTTPS. It registers with your account when it starts and downloads the models its pop needs. Allow the machine to reach `registry.eyepop.ai` for the runtime image, `compute.eyepop.ai` and `dataset-api.eyepop.ai`, and the storage URLs models are downloaded from.
 
-`eyepop instance init` detects the profile. QCS9075 is the only Qualcomm part it resolves a QNN runtime for; on any other Qualcomm host `init` detects the accelerator and then fails, unless you supply a complete `qnn:` block in `--config`. Discrete NVIDIA GPUs and Intel OpenVINO run through the Docker Compose package in [eyepop-ai/eyepop-on-premise](https://github.com/eyepop-ai/eyepop-on-premise) instead — `init` does not provision them yet. On such a host it detects the accelerator and refuses rather than falling back; pass `--profile cpu` to run without it.
+### On-premise or cloud
 
-Pick one path per host — the two collide in both directions. The CLI does not recognize an instance the Compose package installed, so `eyepop run` on that machine still goes to the cloud; and because both use the Compose project name `eyepop-on-premise` with the same service and volume names, either installer recreates the other's containers over its volumes.
+|  | Cloud | On-premise |
+| --- | --- | --- |
+| **Where inference runs** | On EyePop's servers | On your machine, on its CPU, GPU or NPU |
+| **Your images and video** | Uploaded to EyePop for processing | Processed on the machine; not uploaded |
+| **Latency** | Every request travels over the internet | No round trip; the model runs next to the camera |
+| **Network** | Needed for every request | Needed to start and to download models; inference runs locally |
+| **Capacity** | Grows with the sessions and deployments you start | What one machine can do, serving one pop |
+| **Hardware** | Chosen and maintained by EyePop | Yours to choose and maintain, from a CPU to a GPU or NPU |
+| **Setup** | Nothing to install | Docker and the EyePop CLI on the machine, then one command |
 
-### Create an instance
+Choose on-premise when media must not leave the site, when you need answers with no network delay, or when sending video to the cloud would cost too much bandwidth. Choose the [cloud](https://docs.eyepop.ai/developer-documentation/deploying/cloud) to start without hardware, or when your load varies.
 
-```bash
-eyepop instance init --pop eyepop.person:latest
-```
+### Supported platforms
 
-One command does the whole thing: detects the hardware profile, checks prerequisites, installs a registry credential if docker does not already hold one, registers the instance with your account, pulls the runtime image — several gigabytes — and starts the container. It returns once the container reports healthy, waiting up to `--wait` seconds, 300 by default. When it finishes, the machine is on-premise and ready.
+| Platform | Hardware | CPU architecture |
+| --- | --- | --- |
+| CPU | Any machine; inference runs on the CPU | x86_64, ARM64 |
+| NVIDIA GPU | NVIDIA GPUs, and NVIDIA Jetson on JetPack 7 or later | x86_64, ARM64 |
+| NVIDIA Jetson | Jetson Orin on JetPack 6 | ARM64 |
+| Intel | Intel GPUs, and the NPU of an Intel Core Ultra | x86_64 |
+| Qualcomm | Dragonwing IQ-9075, on its Hexagon NPU | ARM64 |
 
-The generated compose project and instance configuration live under `~/.eyepop`, unless you name another root with `--config-dir` or `EYEPOP_INSTANCE_DIR`. The runtime's own state — its config copy, private data, and the model cache — lives in Docker named volumes, so backing up `~/.eyepop` does not capture the cache. The runtime serves `http://127.0.0.1:8080`.
+Each platform has its own prerequisites, such as the NVIDIA Container Toolkit or Qualcomm's AI Runtime SDK. The CLI guide lists them.
 
-### Confirm it's up
+### Get started
 
-```bash
-eyepop get instances
-```
-
-This lists the on-premise instances registered to your account, so a new one showing up is the registration landing. Add `--json` for scripting.
-
-### Change the Pop it serves
-
-The Pop is not fixed for the life of the instance:
-
-```bash
-eyepop instance set pop eyepop.vehicle:latest
-```
-
-The CLI resolves the Pop against your account before it touches anything, then recreates the container. The instance keeps its identity and its model cache, and the runtime image is not pulled again.
-
-### Run inference
-
-{% tabs %}
-{% tab title="CLI" %}
-```bash
-eyepop run image.jpg
-```
-
-With no target named, the run uses the Pop the instance already serves. Nothing is sent to the cloud and no session is created.
-{% endtab %}
-
-{% tab title="curl" %}
-The instance serves its Pop on a pipeline. Find it, then send media to it:
-
-```bash
-PIPELINE_ID=$(curl -sS http://127.0.0.1:8080/pipelines | jq -r '.[0].id')
-
-# A local file, as raw bytes
-curl -sS -X POST \
-  "http://127.0.0.1:8080/pipelines/$PIPELINE_ID/source?mode=queue&processing=sync" \
-  -H 'Content-Type: image/jpeg' \
-  -H 'Accept: application/jsonl' \
-  --data-binary @image.jpg
-
-# A URL the instance fetches itself
-curl -sS -X PATCH \
-  "http://127.0.0.1:8080/pipelines/$PIPELINE_ID/source?mode=queue&processing=sync" \
-  -H 'Content-Type: application/json' \
-  -H 'Accept: application/jsonl' \
-  -d '{"sourceType": "URL", "url": "https://example.com/image.jpg"}'
-```
-
-Predictions come back as JSONL, one per line — one line for an image, one per frame for a video.
-
-The runtime requires no credential here: for a CLI-provisioned instance it is published on `127.0.0.1` by default, and that binding is the boundary — only `eyepop instance init --bind`, or the equivalent `bind:` key in its `--config` file, widens it. Do not expose the port to other machines without an authenticated layer in front of it.
-{% endtab %}
-
-{% tab title="Python" %}
-```python
-from eyepop import EyePopSdk
-from eyepop.worker.worker_types import InferenceComponent, Pop
-
-pop = Pop(components=[
-    InferenceComponent(ability="eyepop.person:latest")
-])
-
-with EyePopSdk.sync_worker(is_local_mode=True, pop=pop) as endpoint:
-    result = endpoint.upload("image.jpg").predict()
-    print(result)
-```
-
-[Local mode in the Python SDK](https://docs.eyepop.ai/sdks/python/configuration#local-mode)
-{% endtab %}
-
-{% tab title="Node" %}
-```typescript
-import { EyePop, PopComponentType } from '@eyepop.ai/eyepop'
-
-const endpoint = await EyePop.workerEndpoint({
-    isLocalMode: true,
-    pop: {
-        components: [
-            { type: PopComponentType.INFERENCE, ability: 'eyepop.person:latest' },
-        ],
-    },
-}).connect()
-
-try {
-    const results = await endpoint.process({ source: { path: 'image.jpg' } })
-    for await (const result of results) {
-        console.log(result)
-    }
-} finally {
-    await endpoint.disconnect()
-}
-```
-
-[Local mode in the Node SDK](https://docs.eyepop.ai/sdks/node/configuration#local-mode)
-{% endtab %}
-{% endtabs %}
-
-**Local mode** is what points an SDK at `http://127.0.0.1:8080` instead of the cloud, and it needs no account credentials. `EYEPOP_LOCAL_MODE=true` in the environment selects it without the constructor argument. Node still sends an `EYEPOP_API_KEY` if one is set in the environment — unset it to connect anonymously. Node local mode always uses port `8080`; Python takes an `eyepop_url` for anything else.
-
-The SDK creates a pipeline on the instance (at connect in Node, on the first request in Python) and disconnecting removes it, so keep the `with` block or the `finally` — and reuse one connected endpoint for many images rather than connecting per request.
-
-The first request for an ability is slower while the model downloads. After that it is served from the instance's cache.
-
-### Next steps
-
-* [Python SDK](https://docs.eyepop.ai/sdks/python) — configuration, video, image groups, and composed Pops
-* [Node SDK](https://docs.eyepop.ai/sdks/node) — the same, for JavaScript and TypeScript
-* [On-Premise Instances](https://docs.eyepop.ai/cli/on-premise) — operating, repairing, and removing an instance
+[On-Premise Instances](https://docs.eyepop.ai/developer-documentation/cli/on-premise) in the CLI documentation walks you through your first instance step by step, then covers each platform's prerequisites, every setting, model optimization, and running and removing an instance.
