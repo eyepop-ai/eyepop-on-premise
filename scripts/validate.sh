@@ -5,15 +5,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MODES=(standalone agent)
 HARDWARE=(cpu nvidia-cuda nvidia-jetson intel-openvino qualcomm-qnn)
-# Published to docs.eyepop.ai/on-premise.
-PUBLISHED_DOCS=(
-  docs/gitbook/README.md
-)
-
 # Kept in the repository, not published.
 REQUIRED_DOCS=(
   README.md
-  "${PUBLISHED_DOCS[@]}"
   docs/reference/README.md
   docs/reference/getting-started/installation.md
   docs/reference/getting-started/first-inference.md

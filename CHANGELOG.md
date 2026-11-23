@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The public on-premise guide at docs.eyepop.ai Deploying > On-Premise is now maintained with the EyePop CLI. This repository no longer publishes docs.
 - Run the Intel OpenVINO overlay on the GPU by default. The previous `AUTO` default left OpenVINO with no part of the model, so inference ran on the CPU.
 - Support Standalone and Beta Agent modes across CPU, NVIDIA CUDA, NVIDIA Jetson, Intel OpenVINO, and Qualcomm QNN.
 - Provide composable mode and hardware overlays with registry-hosted, latest-tagged runtime images.

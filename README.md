@@ -44,9 +44,10 @@ Full instructions are in [`docs/reference`](docs/reference/README.md).
 
 ## Documentation
 
+The public on-premise guide at [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise) is maintained with the EyePop CLI, next to the `eyepop instance` commands it documents. The docs here are not published:
+
 | Directory | Published | Contents |
 | --- | --- | --- |
-| [`docs/gitbook`](docs/gitbook) | Yes, to [docs.eyepop.ai/deploying/on-premise](https://docs.eyepop.ai/deploying/on-premise) | One page: create an instance, change its Pop, run inference |
 | [`docs/reference`](docs/reference/README.md) | No | This package in full: manual install, configuration keys, hardware, operations |
 | [`docs/agent`](docs/agent/README.md) | No | Agent mode, held back until it is announced |
 
